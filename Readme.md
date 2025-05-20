@@ -1,7 +1,7 @@
 # Личный проект «YetiCave»
 
 * Студент: [Артём Витков](https://up.htmlacademy.ru/php-individual/1/user/2616297).
-* Наставник: `Неизвестно`.
+* Наставник: [Сергей Попов](https://up.htmlacademy.ru/php-individual/1/user/1181399).
 
 ---
 
