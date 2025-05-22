@@ -1,7 +1,7 @@
 <?php
 $is_auth = rand(0, 1);
 $user_name = 'Артём';
-$categoriesList = [
+$categories_list = [
     'Доски и лыжи',
     'Крепления',
     'Ботинки',
@@ -9,7 +9,7 @@ $categoriesList = [
     'Инструменты',
     'Разное',
 ];
-$lotsList = [
+$lots_list = [
     [
         'name' => '2014 Rossignol District Snowboard',
         'category' => 'Доски и лыжи',
@@ -95,9 +95,9 @@ $lotsList = [
     <section class="promo">
         <h2 class="promo__title">Нужен стафф для катки?</h2>
         <p class="promo__text">На нашем интернет-аукционе ты найдёшь самое эксклюзивное сноубордическое и горнолыжное снаряжение.</p>
-        <?php if (!empty($categoriesList)): ?>
+        <?php if (!empty($categories_list)): ?>
             <ul class="promo__list">
-                <?php foreach ($categoriesList as $category): ?>
+                <?php foreach ($categories_list as $category): ?>
                     <li class="promo__item promo__item--boards">
                         <a class="promo__link" href="pages/all-lots.html"><?= $category ?></a>
                     </li>
@@ -109,9 +109,9 @@ $lotsList = [
         <div class="lots__header">
             <h2>Открытые лоты</h2>
         </div>
-        <?php if (!empty($lotsList)): ?>
+        <?php if (!empty($lots_list)): ?>
         <ul class="lots__list">
-            <?php foreach ($lotsList as $lot): ?>
+            <?php foreach ($lots_list as $lot): ?>
             <li class="lots__item lot">
                 <div class="lot__image">
                     <img src="<?= $lot['img'] ?? '' ?>" width="350" height="260" alt="<?= $lot['name'] ?? '' ?>">
@@ -138,10 +138,10 @@ $lotsList = [
 </div>
 
 <footer class="main-footer">
-    <?php if (!empty($categoriesList)): ?>
+    <?php if (!empty($categories_list)): ?>
     <nav class="nav">
         <ul class="nav__list container">
-            <?php foreach ($categoriesList as $category): ?>
+            <?php foreach ($categories_list as $category): ?>
             <li class="nav__item">
                 <a href="pages/all-lots.html"><?= $category ?></a>
             </li>
