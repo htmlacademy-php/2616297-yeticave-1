@@ -1,3 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @var string[] $categories_list Список категорий
+ * @var string $page_title Заголовок страницы
+ * @var bool $is_auth Флаг авторизации
+ * @var string $user_name Имя пользователя
+ * @var string $page_content Контент страницы
+ */
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>

@@ -1,3 +1,12 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @var string[] $categories_list Список категорий
+ * @var array<int,array{name: string, category: string, price: int, img: string} $lots_list Список лотов
+ */
+?>
 <main class="container">
     <section class="promo">
         <h2 class="promo__title">Нужен стафф для катки?</h2>
