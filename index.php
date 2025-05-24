@@ -1,4 +1,19 @@
 <?php
+
+declare(strict_types=1);
+
+/**
+ * Форматирует цену добавляя разделители для тысяч и символ рубля
+ *
+ * @param int $price Не отформатированная цена
+ * @return string Отформатированная цена с символом рубля
+ */
+function format_price(int $price): string
+{
+    $formatted_price = number_format($price, 0, '', ' ');
+    return "$formatted_price ₽";
+}
+
 $is_auth = rand(0, 1);
 $user_name = 'Артём';
 $categories_list = [
@@ -122,7 +137,7 @@ $lots_list = [
                     <div class="lot__state">
                         <div class="lot__rate">
                             <span class="lot__amount">Стартовая цена</span>
-                            <span class="lot__cost"><?= $lot['price'] ?? 0; ?><b class="rub">р</b></span>
+                            <span class="lot__cost"><?= format_price($lot['price'] ?? 0); ?></span>
                         </div>
                         <div class="lot__timer timer">
                             12:23
