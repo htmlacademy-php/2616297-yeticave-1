@@ -25,6 +25,7 @@ $page_content = include_template(
 $html_result = include_template(
     'layout.php',
     [
+        'categories_list' => $categories_list,
         'page_title' => $page_title,
         'is_auth' => $is_auth,
         'user_name' => $user_name,
