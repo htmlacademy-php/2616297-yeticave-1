@@ -143,4 +143,14 @@ function include_template($name, array $data = []) {
     return $result;
 }
 
-
+/**
+ * Форматирует цену добавляя разделители для тысяч и символ рубля
+ *
+ * @param int $price Не отформатированная цена
+ * @return string Отформатированная цена с символом рубля
+ */
+function format_price(int $price): string
+{
+    $formatted_price = number_format($price, 0, '', ' ');
+    return "$formatted_price ₽";
+}
