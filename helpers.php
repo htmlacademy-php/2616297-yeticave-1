@@ -167,7 +167,7 @@ function format_price(int $price): string
  * уже прошла, возвращает массив нулевых значений
  *
  * @param string $string_date Дата конца временного промежутка в формате строки
- * @return array
+ * @return array<string, int> Ассоциативный массив, количество часов и минут временного интервала
  */
 function get_dt_range(string $string_date): array
 {
@@ -177,7 +177,10 @@ function get_dt_range(string $string_date): array
     $isEndDatePassed = $end_date <= $current_time;
 
     if ($isEndDatePassed) {
-        return [0, 0];
+        return [
+            'hours' => 0,
+            'minutes' => 0,
+        ];
     }
 
     $range = date_diff($current_time, $end_date);
@@ -185,5 +188,28 @@ function get_dt_range(string $string_date): array
     $total_hours = ($range->d * 24) + $range->h;
     $total_minutes = $range->i;
 
-    return [$total_hours, $total_minutes];
+    return [
+        'hours' => $total_hours,
+        'minutes' => $total_minutes,
+    ];
+}
+
+/**
+ * Функция форматирования массива временного интервала в строку
+ *
+ * @param array<string, int> $dt_range Ассоциативный массив, количество часов и минут временного интервала
+ * @return string Строка в формате ЧЧ:ММ
+ */
+function format_dt_range(array $dt_range): string
+{
+    $formatted_hours = sprintf(
+        "%02d",
+        $dt_range['hours'] ?? 0,
+    );
+    $formatted_minutes = sprintf(
+        "%02d",
+        $dt_range['minutes'] ?? 0,
+    );
+
+    return "$formatted_hours:$formatted_minutes";
 }

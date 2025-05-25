@@ -47,10 +47,11 @@ declare(strict_types=1);
                             </div>
                             <?php
                             if (isset($lot['end_date'])):
-                                [$hours, $minutes] = get_dt_range($lot['end_date']);
+                                $remaining_time = get_dt_range($lot['end_date']);
+                                $hours = $remaining_time['hours'] ?? 0;
                             ?>
                             <div class="lot__timer timer <?= $hours === 0 ? 'timer--finishing' : ''; ?>">
-                                <?= "$hours: $minutes"; ?>
+                                <?= format_dt_range($remaining_time); ?>
                             </div>
                             <?php endif; ?>
                         </div>
