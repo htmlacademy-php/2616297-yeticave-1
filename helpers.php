@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Проверяет переданную дату на соответствие формату 'ГГГГ-ММ-ДД'
  *
@@ -13,7 +14,8 @@
  *
  * @return bool true при совпадении с форматом 'ГГГГ-ММ-ДД', иначе false
  */
-function is_date_valid(string $date) : bool {
+function is_date_valid(string $date): bool
+{
     $format_to_check = 'Y-m-d';
     $dateTimeObj = date_create_from_format($format_to_check, $date);
 
@@ -29,7 +31,8 @@ function is_date_valid(string $date) : bool {
  *
  * @return mysqli_stmt Подготовленное выражение
  */
-function db_get_prepare_stmt($link, $sql, $data = []) {
+function db_get_prepare_stmt($link, $sql, $data = [])
+{
     $stmt = mysqli_prepare($link, $sql);
 
     if ($stmt === false) {
@@ -46,12 +49,14 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
 
             if (is_int($value)) {
                 $type = 'i';
-            }
-            else if (is_string($value)) {
-                $type = 's';
-            }
-            else if (is_double($value)) {
-                $type = 'd';
+            } else {
+                if (is_string($value)) {
+                    $type = 's';
+                } else {
+                    if (is_double($value)) {
+                        $type = 'd';
+                    }
+                }
             }
 
             if ($type) {
@@ -96,9 +101,9 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
  *
  * @return string Рассчитанная форма множественнго числа
  */
-function get_noun_plural_form (int $number, string $one, string $two, string $many): string
+function get_noun_plural_form(int $number, string $one, string $two, string $many): string
 {
-    $number = (int) $number;
+    $number = (int)$number;
     $mod10 = $number % 10;
     $mod100 = $number % 100;
 
@@ -126,7 +131,8 @@ function get_noun_plural_form (int $number, string $one, string $two, string $ma
  * @param array $data Ассоциативный массив с данными для шаблона
  * @return string Итоговый HTML
  */
-function include_template($name, array $data = []) {
+function include_template($name, array $data = [])
+{
     $name = 'templates/' . $name;
     $result = '';
 
@@ -153,4 +159,57 @@ function format_price(int $price): string
 {
     $formatted_price = number_format($price, 0, '', ' ');
     return "$formatted_price ₽";
+}
+
+/**
+ * Возвращает количество часов и минут с текущего времени до переданной даты
+ * в формате ассоциативного массива. В случае если дата конца временного промежутка
+ * уже прошла, возвращает массив нулевых значений
+ *
+ * @param string $string_date Дата конца временного промежутка в формате строки
+ * @return array<string, int> Ассоциативный массив, количество часов и минут временного интервала
+ */
+function get_dt_range(string $string_date): array
+{
+    $current_time = date_create('now');
+    $end_date = date_create($string_date);
+
+    $isEndDatePassed = $end_date <= $current_time;
+
+    if ($isEndDatePassed) {
+        return [
+            'hours' => 0,
+            'minutes' => 0,
+        ];
+    }
+
+    $range = date_diff($current_time, $end_date);
+
+    $total_hours = ($range->d * 24) + $range->h;
+    $total_minutes = $range->i;
+
+    return [
+        'hours' => $total_hours,
+        'minutes' => $total_minutes,
+    ];
+}
+
+/**
+ * Функция форматирования массива временного интервала в строку
+ *
+ * @param array<string, int> $dt_range Ассоциативный массив, количество часов и минут временного интервала
+ * @return string Строка в формате ЧЧ:ММ
+ */
+function format_dt_range(array $dt_range): string
+{
+    $formatted_hours = sprintf(
+        "%02d",
+        $dt_range['hours'] ?? 0,
+    );
+    $formatted_minutes = sprintf(
+        "%02d",
+        $dt_range['minutes'] ?? 0,
+    );
+
+    return "$formatted_hours:$formatted_minutes";
 }
