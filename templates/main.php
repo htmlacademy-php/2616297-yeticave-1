@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @var string[] $categories_list Список категорий
- * @var array<int,array{name: string, category: string, price: int, img: string} $lots_list Список лотов
+ * @var array<int,array{name: string, category: string, price: int, img: string, end_date: string} $lots_list Список лотов
  */
 ?>
 <main class="container">
@@ -45,9 +45,14 @@ declare(strict_types=1);
                                 <span class="lot__amount">Стартовая цена</span>
                                 <span class="lot__cost"><?= format_price($lot['price'] ?? 0); ?></span>
                             </div>
-                            <div class="lot__timer timer">
-                                12:23
+                            <?php
+                            if (isset($lot['end_date'])):
+                                [$hours, $minutes] = get_dt_range($lot['end_date']);
+                            ?>
+                            <div class="lot__timer timer <?= $hours === 0 ? 'timer--finishing' : ''; ?>">
+                                <?= "$hours: $minutes"; ?>
                             </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </li>
