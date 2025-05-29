@@ -47,17 +47,11 @@ function db_get_prepare_stmt($link, $sql, $data = [])
         foreach ($data as $value) {
             $type = 's';
 
-            if (is_int($value)) {
-                $type = 'i';
-            } else {
-                if (is_string($value)) {
-                    $type = 's';
-                } else {
-                    if (is_double($value)) {
-                        $type = 'd';
-                    }
-                }
-            }
+            $type = match(true) {
+                is_int($value) => 'i',
+                is_string($value) => 's',
+                is_double($value) => 'd'
+            };
 
             if ($type) {
                 $types .= $type;
@@ -103,7 +97,6 @@ function db_get_prepare_stmt($link, $sql, $data = [])
  */
 function get_noun_plural_form(int $number, string $one, string $two, string $many): string
 {
-    $number = (int)$number;
     $mod10 = $number % 10;
     $mod100 = $number % 100;
 
@@ -174,9 +167,9 @@ function get_dt_range(string $string_date): array
     $current_time = date_create('now');
     $end_date = date_create($string_date);
 
-    $isEndDatePassed = $end_date <= $current_time;
+    $is_end_date_passed = $end_date <= $current_time;
 
-    if ($isEndDatePassed) {
+    if ($is_end_date_passed) {
         return [
             'hours' => 0,
             'minutes' => 0,
