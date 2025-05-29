@@ -47,17 +47,11 @@ function db_get_prepare_stmt($link, $sql, $data = [])
         foreach ($data as $value) {
             $type = 's';
 
-            if (is_int($value)) {
-                $type = 'i';
-            } else {
-                if (is_string($value)) {
-                    $type = 's';
-                } else {
-                    if (is_double($value)) {
-                        $type = 'd';
-                    }
-                }
-            }
+            $type = match(true) {
+                is_int($value) => 'i',
+                is_string($value) => 's',
+                is_double($value) => 'd'
+            };
 
             if ($type) {
                 $types .= $type;
