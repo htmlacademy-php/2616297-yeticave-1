@@ -167,9 +167,9 @@ function get_dt_range(string $string_date): array
     $current_time = date_create('now');
     $end_date = date_create($string_date);
 
-    $isEndDatePassed = $end_date <= $current_time;
+    $is_end_date_passed = $end_date <= $current_time;
 
-    if ($isEndDatePassed) {
+    if ($is_end_date_passed) {
         return [
             'hours' => 0,
             'minutes' => 0,
