@@ -13,7 +13,7 @@ CREATE TABLE categories
 (
     id             INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name           VARCHAR(128) NOT NULL,
-    character_code VARCHAR(128) NOT NULL COMMENT 'Символьный код категории латиницей',
+    slug VARCHAR(128) NOT NULL COMMENT 'Символьный код категории латиницей',
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE = INNODB;
