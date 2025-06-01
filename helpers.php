@@ -213,9 +213,9 @@ function format_dt_range(array $dt_range): string
  * @param mysqli $conn Ресурс подключения в БД
  * @param string $sql Текст подготовленного запроса
  * @param array $data Выходные переменные для привязки к запросу
- * @return array|void Данные в формате ассоциативного массива, заканчивает выполнение PHP-сценария в случае ошибки
+ * @return array Данные в формате ассоциативного массива, заканчивает выполнение PHP-сценария в случае ошибки
  */
-function execute_query(mysqli $conn, string $sql, array $data = [])
+function execute_query(mysqli $conn, string $sql, array $data = []): array
 {
     $stmt = db_get_prepare_stmt(
         $conn,
