@@ -15,6 +15,50 @@ $config = require_once './config/autoload.php';
 
 $page_title = 'Главная';
 
+$conn = mysqli_connect(
+    $config['db']['host'] ?? 'localhost',
+    $config['db']['user'] ?? 'root',
+    $config['db']['password'] ?? 'pw',
+    $config['db']['name'] ?? 'database',
+    $config['db']['port'] ?? 3306,
+);
+
+if ($conn === false) {
+    http_response_code(500);
+    die('Ошибка подключения к базе данных. Пожалуйста, попробуйте позже.');
+}
+
+$lots_list = execute_query(
+    $conn,
+    <<<SQL
+    SELECT l.id,
+           l.name,
+           l.start_price,
+           MAX(b.buy_price) AS current_price,
+           l.img_url,
+           l.end_date,
+           l.user_id,
+           c.name           AS category_name,
+           l.created_at
+    FROM lots l
+             JOIN categories c on c.id = l.category_id
+             LEFT JOIN buy_orders b on l.id = b.lot_id
+    WHERE l.winner_id IS NULL
+    GROUP BY l.id, l.name, l.start_price, l.img_url, l.end_date, l.user_id, c.name, l.created_at
+    ORDER BY l.created_at DESC
+    LIMIT 9
+    SQL
+);
+
+$categories_list = execute_query(
+    $conn,
+    <<<SQL
+    SELECT name, slug
+    FROM categories
+    LIMIT 20
+    SQL
+);
+
 $page_content = include_template(
     'main.php',
     [
