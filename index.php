@@ -43,7 +43,7 @@ $lots_list = execute_query(
     FROM lots l
              JOIN categories c on c.id = l.category_id
              LEFT JOIN buy_orders b on l.id = b.lot_id
-    WHERE l.winner_id IS NULL
+    WHERE l.winner_id IS NULL AND l.end_date > NOW()
     GROUP BY l.id, l.created_at
     ORDER BY l.created_at DESC
     LIMIT 9
