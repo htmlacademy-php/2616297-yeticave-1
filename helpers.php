@@ -225,7 +225,9 @@ function execute_query(mysqli $conn, string $sql, array $data = []): array
 
     $stmt_result = $stmt->execute();
 
-    if ($stmt_result === false) {
+    $is_executing_failed = $stmt_result === false;
+
+    if ($is_executing_failed) {
         http_response_code(500);
         die('Ошибка в обработке запроса. Пожалуйста, попробуйте позже.');
     }

@@ -23,7 +23,9 @@ $conn = mysqli_connect(
     $config['db']['port'] ?? 3306,
 );
 
-if ($conn === false) {
+$is_connection_failed = $conn === false;
+
+if ($is_connection_failed) {
     http_response_code(500);
     die('Ошибка подключения к базе данных. Пожалуйста, попробуйте позже.');
 }
