@@ -47,7 +47,7 @@ function db_get_prepare_stmt($link, $sql, $data = [])
         foreach ($data as $value) {
             $type = 's';
 
-            $type = match(true) {
+            $type = match (true) {
                 is_int($value) => 'i',
                 is_string($value) => 's',
                 is_double($value) => 'd'
@@ -205,4 +205,31 @@ function format_dt_range(array $dt_range): string
     );
 
     return "$formatted_hours:$formatted_minutes";
+}
+
+/**
+ * Выполняет SQL запрос
+ *
+ * @param mysqli $conn Ресурс подключения в БД
+ * @param string $sql Текст подготовленного запроса
+ * @param array $data Выходные переменные для привязки к запросу
+ * @return array|void Данные в формате ассоциативного массива, заканчивает выполнение PHP-сценария в случае ошибки
+ */
+function execute_query(mysqli $conn, string $sql, array $data = [])
+{
+    $stmt = db_get_prepare_stmt(
+        $conn,
+        $sql,
+        $data,
+    );
+
+    $stmt_result = $stmt->execute();
+
+    if ($stmt_result === false) {
+        http_response_code(500);
+        die('Ошибка в обработке запроса. Пожалуйста, попробуйте позже.');
+    }
+
+    return $stmt->get_result()
+        ->fetch_all(MYSQLI_ASSOC);
 }
