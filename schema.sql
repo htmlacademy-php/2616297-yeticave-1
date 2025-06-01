@@ -104,7 +104,7 @@ FROM lots l
          JOIN categories c on c.id = l.category_id
          LEFT JOIN buy_orders b on l.id = b.lot_id
 WHERE l.winner_id IS NULL
-GROUP BY l.id, l.name, l.start_price, l.img_url, l.end_date, l.user_id, c.name, l.created_at
+GROUP BY l.id, l.created_at
 ORDER BY l.created_at DESC;
 
 -- Показать лот по его ID и название категории, к которой принадлежит лот
