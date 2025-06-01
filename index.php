@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 require_once 'helpers.php';
 require_once 'data.php';
+$config = require_once './config/autoload.php';
 
 $page_title = 'Главная';
 
