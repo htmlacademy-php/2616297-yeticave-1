@@ -167,9 +167,7 @@ function get_dt_range(string $string_date): array
     $current_time = date_create('now');
     $end_date = date_create($string_date);
 
-    $is_end_date_passed = $end_date <= $current_time;
-
-    if ($is_end_date_passed) {
+    if ($end_date <= $current_time) {
         return [
             'hours' => 0,
             'minutes' => 0,
@@ -225,9 +223,7 @@ function execute_query(mysqli $conn, string $sql, array $data = []): array
 
     $stmt_result = $stmt->execute();
 
-    $is_executing_failed = $stmt_result === false;
-
-    if ($is_executing_failed) {
+    if ($stmt_result === false) {
         http_response_code(500);
         die('Ошибка в обработке запроса. Пожалуйста, попробуйте позже.');
     }
