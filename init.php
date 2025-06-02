@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once 'helpers.php';
+
 $config = require_once './config/autoload.php';
 
 $conn = mysqli_connect(
@@ -13,8 +15,7 @@ $conn = mysqli_connect(
 );
 
 if ($conn === false) {
-    http_response_code(500);
-    die('Ошибка подключения к базе данных. Пожалуйста, попробуйте позже.');
+    exit_with_message('Ошибка подключения к базе данных. Пожалуйста, попробуйте позже.');
 }
 
 return $conn;

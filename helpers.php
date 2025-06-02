@@ -206,6 +206,19 @@ function format_dt_range(array $dt_range): string
 }
 
 /**
+ * Завершает работу программы с сообщением об ошибке
+ *
+ * @param string $message Сообщение об ошибке
+ * @param int $code Код ошибки сервера
+ * @return void
+ */
+function exit_with_message(string $message, int $code = 500): void
+{
+    http_response_code($code);
+    die($message);
+}
+
+/**
  * Выполняет SQL запрос
  *
  * @param mysqli $conn Ресурс подключения в БД
@@ -224,8 +237,7 @@ function execute_query(mysqli $conn, string $sql, array $data = []): array
     $stmt_result = $stmt->execute();
 
     if ($stmt_result === false) {
-        http_response_code(500);
-        die('Ошибка в обработке запроса. Пожалуйста, попробуйте позже.');
+        exit_with_message('Ошибка в обработке запроса. Пожалуйста, попробуйте позже.');
     }
 
     return $stmt->get_result()
