@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+require_once 'helpers.php';
+
+/**
+ * Возвращает активных и открытых лотов
+ *
+ * @param mysqli $conn Ресурс подключения в БД
+ * @return array Список лотов в формате ассоциативного массива
+ */
+function get_open_lots(mysqli $conn): array
+{
+    return execute_query(
+        $conn,
+        <<<SQL
+        SELECT l.id,
+               l.name,
+               l.start_price,
+               MAX(b.buy_price) AS current_price,
+               l.img_url,
+               l.end_date,
+               l.user_id,
+               c.name           AS category_name,
+               l.created_at
+        FROM lots l
+                 JOIN categories c on c.id = l.category_id
+                 LEFT JOIN buy_orders b on l.id = b.lot_id
+        WHERE l.winner_id IS NULL AND l.end_date > NOW()
+        GROUP BY l.id, l.created_at
+        ORDER BY l.created_at DESC
+        LIMIT 9
+        SQL
+    );
+}
