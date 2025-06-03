@@ -245,6 +245,8 @@ function execute_query(mysqli $conn, string $sql, array $data = []): array
 }
 
 /**
+ * Производит валидацию данных, используя функции-валидаторы
+ *
  * @param array $data Массив данных для валидации
  * @param array<string, array{callable|string} $rules Правила валидации
  *        в формате ['field_name' => [rule1, rule2, ...]]

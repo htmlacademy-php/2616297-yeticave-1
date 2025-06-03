@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * Функция-валидатор, проверяет что данные являются целым числом
+ *
+ * @param mixed $value Данные для валидации
+ * @return string|bool Сообщение ошибки, либо false, в случае когда данные валидны
+ */
 function valid_integer(mixed $value): string|bool
 {
     $is_valid = filter_var($value, FILTER_VALIDATE_INT);
@@ -13,6 +19,12 @@ function valid_integer(mixed $value): string|bool
     return false;
 }
 
+/**
+ * Функция-валидатор, проверяет что данные заполнены
+ *
+ * @param mixed $value Данные для валидации
+ * @return string|bool Сообщение ошибки, либо false, в случае когда данные валидны
+ */
 function required(mixed $value): string|bool
 {
     $is_valid = match (true) {
@@ -25,6 +37,12 @@ function required(mixed $value): string|bool
     return $is_valid ? false : 'Значение обязательно';
 }
 
+/**
+ * Функция-обёртка, проверяет что данные больше определенного числового значения
+ *
+ * @param int $min Минимальное числовое значение валидных данных
+ * @return callable Функция-валидатор
+ */
 function greater_than(int $min): callable
 {
     return function (mixed $value) use ($min): string|bool {
