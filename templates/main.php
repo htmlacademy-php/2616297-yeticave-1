@@ -13,8 +13,8 @@ declare(strict_types=1);
         <p class="promo__text">На нашем интернет-аукционе ты найдёшь самое эксклюзивное сноубордическое и горнолыжное снаряжение.</p>
         <ul class="promo__list">
             <?php foreach ($categories_list as $category): ?>
-                <li class="promo__item promo__item--boards">
-                    <a class="promo__link" href="pages/all-lots.html"><?= $category; ?></a>
+                <li class="promo__item <?= isset($category['slug']) ? "promo__item--{$category['slug']}" : '' ?>">
+                    <a class="promo__link" href="pages/all-lots.html"><?= $category['name'] ?? '' ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -27,14 +27,14 @@ declare(strict_types=1);
             <?php foreach ($lots_list as $lot): ?>
                 <li class="lots__item lot">
                     <div class="lot__image">
-                        <img src="<?= $lot['img'] ?? '' ?>"
+                        <img src="<?= $lot['img_url'] ?? '' ?>"
                              width="350"
                              height="260"
                              alt="<?= htmlspecialchars($lot['name'] ?? ''); ?>"
                         >
                     </div>
                     <div class="lot__info">
-                        <span class="lot__category"><?= $lot['category'] ?? '' ?></span>
+                        <span class="lot__category"><?= $lot['category_name'] ?? '' ?></span>
                         <h3 class="lot__title">
                             <a class="text-link" href="pages/lot.html">
                                 <?= htmlspecialchars($lot['name'] ?? ''); ?>
@@ -43,7 +43,7 @@ declare(strict_types=1);
                         <div class="lot__state">
                             <div class="lot__rate">
                                 <span class="lot__amount">Стартовая цена</span>
-                                <span class="lot__cost"><?= format_price($lot['price'] ?? 0); ?></span>
+                                <span class="lot__cost"><?= format_price($lot['start_price'] ?? 0); ?></span>
                             </div>
                             <?php
                             if (isset($lot['end_date'])):

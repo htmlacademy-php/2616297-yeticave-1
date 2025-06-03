@@ -1,8 +1,6 @@
 <?php
 
 /**
- * @var string[] $categories_list Список категорий
- * @var array<int,array{name: string, category: string, price: int, img: string} $lots_list Список лотов
  * @var bool $is_auth Флаг авторизации
  * @var string $user_name Имя пользователя
  */
@@ -11,8 +9,15 @@ declare(strict_types=1);
 
 require_once 'helpers.php';
 require_once 'data.php';
+require_once 'models/category.php';
+require_once 'models/lot.php';
+
+$conn = require_once 'init.php';
 
 $page_title = 'Главная';
+
+$lots_list = get_open_lots($conn);
+$categories_list = get_all_categories($conn);
 
 $page_content = include_template(
     'main.php',

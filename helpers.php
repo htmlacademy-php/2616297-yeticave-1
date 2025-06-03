@@ -47,7 +47,7 @@ function db_get_prepare_stmt($link, $sql, $data = [])
         foreach ($data as $value) {
             $type = 's';
 
-            $type = match(true) {
+            $type = match (true) {
                 is_int($value) => 'i',
                 is_string($value) => 's',
                 is_double($value) => 'd'
@@ -167,9 +167,7 @@ function get_dt_range(string $string_date): array
     $current_time = date_create('now');
     $end_date = date_create($string_date);
 
-    $is_end_date_passed = $end_date <= $current_time;
-
-    if ($is_end_date_passed) {
+    if ($end_date <= $current_time) {
         return [
             'hours' => 0,
             'minutes' => 0,
@@ -205,4 +203,43 @@ function format_dt_range(array $dt_range): string
     );
 
     return "$formatted_hours:$formatted_minutes";
+}
+
+/**
+ * Завершает работу программы с сообщением об ошибке
+ *
+ * @param string $message Сообщение об ошибке
+ * @param int $code Код ошибки сервера
+ * @return void
+ */
+function exit_with_message(string $message, int $code = 500): void
+{
+    http_response_code($code);
+    die($message);
+}
+
+/**
+ * Выполняет SQL запрос
+ *
+ * @param mysqli $conn Ресурс подключения в БД
+ * @param string $sql Текст подготовленного запроса
+ * @param array $data Выходные переменные для привязки к запросу
+ * @return array Данные в формате ассоциативного массива, заканчивает выполнение PHP-сценария в случае ошибки
+ */
+function execute_query(mysqli $conn, string $sql, array $data = []): array
+{
+    $stmt = db_get_prepare_stmt(
+        $conn,
+        $sql,
+        $data,
+    );
+
+    $stmt_result = $stmt->execute();
+
+    if ($stmt_result === false) {
+        exit_with_message('Ошибка в обработке запроса. Пожалуйста, попробуйте позже.');
+    }
+
+    return $stmt->get_result()
+        ->fetch_all(MYSQLI_ASSOC);
 }
