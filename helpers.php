@@ -246,3 +246,42 @@ function execute_query(mysqli $conn, string $sql, array $data = [], $fetch_all =
         ? ($result->fetch_assoc() ?: [])
         : $result->fetch_all(MYSQLI_ASSOC);
 }
+
+/**
+ * @param array $data Массив данных для валидации
+ * @param array<string, array{callable|string} $rules Правила валидации
+ *        в формате ['field_name' => [rule1, rule2, ...]]
+ *        где каждый rule может быть:
+ *        - callable: функция-валидатор (возвращает string|false)
+ *        - string: имя встроенного правила
+ * @return array<string, string[] Массив ошибок в формате
+ *        ['field_name' => ['ошибка1, 'ошибка2', ...]]
+ */
+function validate(array $data, array $rules): array
+{
+    $messages = [];
+
+    foreach ($rules as $field => $rule) {
+        $is_exists = array_key_exists($field, $data);
+
+        if (
+            !$is_exists
+            && in_array('required', $rule)
+        ) {
+            $messages[$field][] = 'Значения не существует';
+            continue;
+        }
+
+        if ($is_exists) {
+            foreach ($rule as $callback) {
+                $validation_result = call_user_func($callback, $data[$field]);
+
+                if ($validation_result !== false) {
+                    $messages[$field][] = $validation_result;
+                }
+            }
+        }
+    }
+
+    return $messages;
+}
