@@ -11,23 +11,28 @@ require_once 'helpers.php';
 require_once 'data.php';
 require_once 'models/category.php';
 require_once 'models/lot.php';
+require_once 'validators.php';
 
 $conn = require_once 'init.php';
 
-$lot_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+$validation = validate(
+    $_GET,
+    [
+        'id' => ['required', 'valid_integer', greater_than(0)],
+    ],
+);
 
-if ($lot_id === null) {
-    $page_title = 'Ошибка';
-    exit_with_message('Отсутствует параметр id', 400);
+if (!empty($validation)) {
+    $error_msg = '';
+
+    foreach ($validation as $key => $value) {
+        $error_msg .= "Значение $key содержит ошибки: " . implode(', ', $value) . '<br>';
+    }
+
+    exit_with_message($error_msg, 400);
 }
 
-if (
-    $lot_id === false
-    || $lot_id < 1
-) {
-    $page_title = 'Ошибка';
-    exit_with_message('Некорректный тип параметра запроса', 400);
-}
+$lot_id = (int) ($_GET['id'] ?? 0);
 
 $lot = get_lot_by_id($conn, $lot_id);
 
@@ -36,7 +41,7 @@ if (empty($lot)) {
     exit_with_message('Лот не найден', 404);
 }
 
-$page_title = $lot['name'];
+$page_title = $lot['name'] ?? '';
 
 $categories_list = get_all_categories($conn);
 
