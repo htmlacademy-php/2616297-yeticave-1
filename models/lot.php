@@ -35,6 +35,11 @@ function get_open_lots(mysqli $conn): array
     );
 }
 
+/**
+ * @param mysqli $conn Ресурс подключения в БД
+ * @param int $lot_id Уникальный идентификатор лота
+ * @return array Массив с информацией о конкретном лоте
+ */
 function get_lot_by_id(mysqli $conn, int $lot_id): array
 {
     return execute_query(
