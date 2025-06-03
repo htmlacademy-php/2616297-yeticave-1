@@ -59,6 +59,5 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
         WHERE l.id = ?;
         SQL,
         [$lot_id],
-        false
     );
 }

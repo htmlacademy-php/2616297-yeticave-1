@@ -226,7 +226,7 @@ function exit_with_message(string $message, int $code = 500): void
  * @param array $data Выходные переменные для привязки к запросу
  * @return array Данные в формате ассоциативного массива, заканчивает выполнение PHP-сценария в случае ошибки
  */
-function execute_query(mysqli $conn, string $sql, array $data = [], $fetch_all = true): array
+function execute_query(mysqli $conn, string $sql, array $data = []): array
 {
     $stmt = db_get_prepare_stmt(
         $conn,
@@ -240,11 +240,8 @@ function execute_query(mysqli $conn, string $sql, array $data = [], $fetch_all =
         exit_with_message('Ошибка в обработке запроса. Пожалуйста, попробуйте позже.');
     }
 
-    $result = $stmt->get_result();
-
-    return $fetch_all === false
-        ? ($result->fetch_assoc() ?: [])
-        : $result->fetch_all(MYSQLI_ASSOC);
+    return $stmt->get_result()
+        ->fetch_all(MYSQLI_ASSOC);
 }
 
 /**
