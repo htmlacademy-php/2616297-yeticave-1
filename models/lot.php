@@ -34,3 +34,26 @@ function get_open_lots(mysqli $conn): array
         SQL
     );
 }
+
+function get_lot_by_id(mysqli $conn, int $lot_id): array
+{
+    return execute_query(
+        $conn,
+        <<<SQL
+        SELECT l.name,
+               l.description,
+               l.img_url,
+               l.start_price,
+               l.end_date,
+               l.betting_step,
+               l.user_id,
+               l.winner_id,
+               c.name AS category_name
+        FROM lots l
+                 JOIN categories c on c.id = l.category_id
+        WHERE l.id = ?;
+        SQL,
+        [$lot_id],
+        false
+    );
+}
