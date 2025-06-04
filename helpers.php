@@ -273,6 +273,10 @@ function validate(array $data, array $rules): array
 
         if ($is_exists) {
             foreach ($rule as $callback) {
+                if (!function_exists($callback)) {
+                    continue;
+                }
+
                 $validation_result = call_user_func($callback, $data[$field]);
 
                 if ($validation_result !== false) {
