@@ -252,7 +252,6 @@ function execute_query(mysqli $conn, string $sql, array $data = []): array
  *        в формате ['field_name' => [rule1, rule2, ...]]
  *        где каждый rule может быть:
  *        - callable: функция-валидатор (возвращает string|false)
- *        - string: имя встроенного правила
  * @return array<string, string[] Массив ошибок в формате
  *        ['field_name' => ['ошибка1, 'ошибка2', ...]]
  */

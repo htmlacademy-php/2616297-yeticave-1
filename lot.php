@@ -32,7 +32,7 @@ if (!empty($validation)) {
     exit_with_message($error_msg, 400);
 }
 
-$lot_id = (int) ($_GET['id'] ?? 0);
+$lot_id = (int)($_GET['id'] ?? 0);
 
 $lot = get_lot_by_id($conn, $lot_id);
 
