@@ -265,7 +265,6 @@ function validate(array $data, array $rules): array
             if (
                 is_string($callback)
                 && !function_exists($callback)
-                && $callback !== 'required'
             ) {
                 continue;
             }
