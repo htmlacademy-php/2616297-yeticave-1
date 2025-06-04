@@ -261,27 +261,19 @@ function validate(array $data, array $rules): array
     $messages = [];
 
     foreach ($rules as $field => $rule) {
-        $is_exists = array_key_exists($field, $data);
+        foreach ($rule as $callback) {
+            if (
+                is_string($callback)
+                && !function_exists($callback)
+                && $callback !== 'required'
+            ) {
+                continue;
+            }
 
-        if (
-            !$is_exists
-            && in_array('required', $rule)
-        ) {
-            $messages[$field][] = 'Значения не существует';
-            continue;
-        }
+            $validation_result = call_user_func($callback, $data[$field] ?? null);
 
-        if ($is_exists) {
-            foreach ($rule as $callback) {
-                if (!function_exists($callback)) {
-                    continue;
-                }
-
-                $validation_result = call_user_func($callback, $data[$field]);
-
-                if ($validation_result !== false) {
-                    $messages[$field][] = $validation_result;
-                }
+            if ($validation_result !== false) {
+                $messages[$field][] = $validation_result;
             }
         }
     }

@@ -10,6 +10,10 @@ declare(strict_types=1);
  */
 function valid_integer(mixed $value): string|bool
 {
+    if ($value === null) {
+        return false;
+    }
+
     $is_valid = filter_var($value, FILTER_VALIDATE_INT);
 
     if ($is_valid === false) {
@@ -46,6 +50,10 @@ function required(mixed $value): string|bool
 function greater_than(int $min): callable
 {
     return function (mixed $value) use ($min): string|bool {
+        if ($value === null) {
+            return false;
+        }
+
         if (
             is_string($value)
             && is_numeric($value)
