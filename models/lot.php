@@ -34,3 +34,30 @@ function get_open_lots(mysqli $conn): array
         SQL
     );
 }
+
+/**
+ * @param mysqli $conn Ресурс подключения в БД
+ * @param int $lot_id Уникальный идентификатор лота
+ * @return array Массив с информацией о конкретном лоте
+ */
+function get_lot_by_id(mysqli $conn, int $lot_id): array
+{
+    return execute_query(
+        $conn,
+        <<<SQL
+        SELECT l.name,
+               l.description,
+               l.img_url,
+               l.start_price,
+               l.end_date,
+               l.betting_step,
+               l.user_id,
+               l.winner_id,
+               c.name AS category_name
+        FROM lots l
+                 JOIN categories c on c.id = l.category_id
+        WHERE l.id = ?;
+        SQL,
+        [$lot_id],
+    );
+}

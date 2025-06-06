@@ -243,3 +243,38 @@ function execute_query(mysqli $conn, string $sql, array $data = []): array
     return $stmt->get_result()
         ->fetch_all(MYSQLI_ASSOC);
 }
+
+/**
+ * Производит валидацию данных, используя функции-валидаторы
+ *
+ * @param array $data Массив данных для валидации
+ * @param array<string, array{callable|string} $rules Правила валидации
+ *        в формате ['field_name' => [rule1, rule2, ...]]
+ *        где каждый rule может быть:
+ *        - callable: функция-валидатор (возвращает string|false)
+ * @return array<string, string[] Массив ошибок в формате
+ *        ['field_name' => ['ошибка1, 'ошибка2', ...]]
+ */
+function validate(array $data, array $rules): array
+{
+    $messages = [];
+
+    foreach ($rules as $field => $rule) {
+        foreach ($rule as $callback) {
+            if (
+                is_string($callback)
+                && !function_exists($callback)
+            ) {
+                continue;
+            }
+
+            $validation_result = call_user_func($callback, $data[$field] ?? null);
+
+            if ($validation_result !== false) {
+                $messages[$field][] = $validation_result;
+            }
+        }
+    }
+
+    return $messages;
+}

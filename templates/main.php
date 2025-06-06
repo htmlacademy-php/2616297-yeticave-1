@@ -36,7 +36,7 @@ declare(strict_types=1);
                     <div class="lot__info">
                         <span class="lot__category"><?= $lot['category_name'] ?? '' ?></span>
                         <h3 class="lot__title">
-                            <a class="text-link" href="pages/lot.html">
+                            <a class="text-link" href="/lot.php?id=<?= $lot['id'] ?? ''; ?>">
                                 <?= htmlspecialchars($lot['name'] ?? ''); ?>
                             </a>
                         </h3>
