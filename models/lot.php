@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once 'helpers.php';
+require_once 'models/category.php';
 
 /**
  * Возвращает активных и открытых лотов
@@ -68,11 +69,32 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
  * Добавляет новый лот
  *
  * @param mysqli $conn Ресурс подключения в БД
- * @param array $lot_data Данные для нового лота
+ * @param array $fields Текстовые данные
+ * @param array $img_file Массив с данными фотографии
  * @return int|string Уникальный идентификатор добавленного лота
  */
-function add_lot(mysqli $conn, array $lot_data): int|string
+function add_lot(mysqli $conn, array $fields, array $img_file): int|string
 {
+    $category_id = get_category_by_slug($conn, $fields['category']);
+    $file_extension = pathinfo($img_file['name'], PATHINFO_EXTENSION);
+    $new_file_path = 'uploads/' . uniqid('img-') . '.' . $file_extension;
+    $is_file_uploaded = move_uploaded_file($img_file['tmp_name'], $new_file_path);
+
+    if ($is_file_uploaded === false) {
+        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
+    }
+
+    $lot_data = [
+        $fields['lot-name'],
+        $fields['message'],
+        "/$new_file_path",
+        $fields['lot-rate'],
+        $fields['lot-date'],
+        $fields['lot-step'],
+        1,
+        $category_id['id'],
+    ];
+
     execute_query(
         $conn,
         <<<SQL

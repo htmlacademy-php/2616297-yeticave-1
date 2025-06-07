@@ -34,27 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     );
 
     if (empty($errors)) {
-        $category_id = get_category_by_slug($conn, $_POST['category']);
-        $file_extension = pathinfo($_FILES['lot-img']['name'], PATHINFO_EXTENSION);
-        $new_file_path = 'uploads/' . uniqid('img-') . '.' . $file_extension;
-        $is_file_uploaded = move_uploaded_file($_FILES['lot-img']['tmp_name'], $new_file_path);
-
-        if ($is_file_uploaded === false) {
-            exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
-        }
-
         $lot_id = add_lot(
             $conn,
-            [
-                $_POST['lot-name'],
-                $_POST['message'],
-                "/$new_file_path",
-                $_POST['lot-rate'],
-                $_POST['lot-date'],
-                $_POST['lot-step'],
-                1,
-                $category_id['id'],
-            ]
+            $_POST,
+            $_FILES['lot-img'],
         );
 
         header("Location: lot.php?id=$lot_id");
