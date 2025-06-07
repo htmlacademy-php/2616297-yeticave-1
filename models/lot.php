@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once 'helpers.php';
+require_once 'models/category.php';
 
 /**
  * Возвращает активных и открытых лотов
@@ -32,7 +33,7 @@ function get_open_lots(mysqli $conn): array
         ORDER BY l.created_at DESC
         LIMIT 9
         SQL
-    );
+    )->fetch_all(MYSQLI_ASSOC);
 }
 
 /**
@@ -42,7 +43,7 @@ function get_open_lots(mysqli $conn): array
  */
 function get_lot_by_id(mysqli $conn, int $lot_id): array
 {
-    return execute_query(
+    $result = execute_query(
         $conn,
         <<<SQL
         SELECT l.name,
@@ -59,5 +60,55 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
         WHERE l.id = ?;
         SQL,
         [$lot_id],
+    )->fetch_all(MYSQLI_ASSOC);
+
+    return array_merge(...array_values($result));
+}
+
+/**
+ * Добавляет новый лот
+ *
+ * @param mysqli $conn Ресурс подключения в БД
+ * @param array $fields Текстовые данные
+ * @param array $img_file Массив с данными фотографии
+ * @return int|string Уникальный идентификатор добавленного лота
+ */
+function add_lot(mysqli $conn, array $fields, array $img_file): int|string
+{
+    $category_id = get_category_by_slug($conn, $fields['category']);
+    $file_extension = pathinfo($img_file['name'], PATHINFO_EXTENSION);
+    $new_file_path = 'uploads/' . uniqid('img-') . '.' . $file_extension;
+    $is_file_uploaded = move_uploaded_file($img_file['tmp_name'], $new_file_path);
+
+    if ($is_file_uploaded === false) {
+        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
+    }
+
+    $lot_data = [
+        $fields['lot-name'],
+        $fields['message'],
+        "/$new_file_path",
+        $fields['lot-rate'],
+        $fields['lot-date'],
+        $fields['lot-step'],
+        1,
+        $category_id['id'],
+    ];
+
+    execute_query(
+        $conn,
+        <<<SQL
+        INSERT INTO lots (name, description, img_url, start_price, end_date, betting_step, user_id, category_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+        SQL,
+        $lot_data,
     );
+
+    $new_lot_id = mysqli_insert_id($conn);
+
+    if ($new_lot_id === 0) {
+        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
+    }
+
+    return $new_lot_id;
 }
