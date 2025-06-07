@@ -75,18 +75,11 @@ function add_lot(mysqli $conn, array $lot_data): int|string
         $lot_data,
     );
 
-    return mysqli_insert_id($conn);
-}
+    $new_lot_id = mysqli_insert_id($conn);
 
-function get_category_by_slug(mysqli $conn, string $slug): array
-{
-    return execute_query(
-        $conn,
-        <<<SQL
-        SELECT id
-        FROM categories
-        WHERE slug = ?
-        SQL,
-        [$slug],
-    )->fetch_all(MYSQLI_ASSOC);
+    if ($new_lot_id === 0) {
+        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
+    }
+
+    return $new_lot_id;
 }
