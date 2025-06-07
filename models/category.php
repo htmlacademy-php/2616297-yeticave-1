@@ -22,6 +22,13 @@ function get_all_categories(mysqli $conn): array
     )->fetch_all(MYSQLI_ASSOC);
 }
 
+/**
+ * Возвращает уникальный идентификатор категории по её символьному коду
+ *
+ * @param mysqli $conn Ресурс подключения в БД
+ * @param string $slug Символьной код
+ * @return array Массив с идентификатором категории
+ */
 function get_category_by_slug(mysqli $conn, string $slug): array
 {
     $result = execute_query(

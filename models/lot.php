@@ -64,6 +64,13 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
     return array_merge(...array_values($result));
 }
 
+/**
+ * Добавляет новый лот
+ *
+ * @param mysqli $conn Ресурс подключения в БД
+ * @param array $lot_data Данные для нового лота
+ * @return int|string Уникальный идентификатор добавленного лота
+ */
 function add_lot(mysqli $conn, array $lot_data): int|string
 {
     execute_query(

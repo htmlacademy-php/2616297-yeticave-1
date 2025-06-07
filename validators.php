@@ -52,7 +52,7 @@ function required(mixed $value): string|bool
 }
 
 /**
- * Функция-обёртка, проверяет что данные больше определенного числового значения
+ * Функция-валидатор, проверяет что данные больше определенного числового значения
  *
  * @param int $min Минимальное числовое значение валидных данных
  * @return callable Функция-валидатор
@@ -82,6 +82,12 @@ function greater_than(int $min): callable
     };
 }
 
+/**
+ * Возвращает валидатор, который проверяет что строка не превышает заданные лимит количества символов
+ *
+ * @param int $max Лимит количества символов
+ * @return callable Функция-валидатор
+ */
 function character_limit(int $max): callable
 {
     return function (mixed $value) use ($max): string|bool {
@@ -99,6 +105,12 @@ function character_limit(int $max): callable
     };
 }
 
+/**
+ * Проверяет что значение имеет корректный формат даты
+ *
+ * @param mixed $value Данные для валидации
+ * @return string|bool Сообщение об ошибке, либо false если значение проходит валидацию
+ */
 function date_convertable(mixed $value): string|bool
 {
     if ($value === null) {
@@ -114,6 +126,12 @@ function date_convertable(mixed $value): string|bool
     return false;
 }
 
+/**
+ * Проверяет что файл имеет подходящий mime тип
+ *
+ * @param array $mime_types Массив с разрешёнными mime типами
+ * @return callable Функция-валидатор
+ */
 function mime_type_in(array $mime_types): callable
 {
     return function (mixed $value) use ($mime_types): string|bool {
@@ -143,6 +161,12 @@ function mime_type_in(array $mime_types): callable
     };
 }
 
+/**
+ * Проверят что дата больше текущей даты на заданное количество часов
+ *
+ * @param int $hours Количество часов, через которые должна быть дата
+ * @return callable Функция-валидатор
+ */
 function hours_after_now(int $hours): callable
 {
     return function (mixed $value) use ($hours): string|bool {

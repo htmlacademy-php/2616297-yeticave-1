@@ -278,6 +278,12 @@ function validate(array $data, array $rules): array
     return $messages;
 }
 
+/**
+ * Конвертирует mime типы в расширения файлов
+ *
+ * @param array $mime_types Массив mime типов для конвертации
+ * @return array Массив сконвертированных mime типов в соответствующие им расширения файлов
+ */
 function mime_to_ext(array $mime_types): array
 {
     $mime_map = [
@@ -472,6 +478,12 @@ function mime_to_ext(array $mime_types): array
     return $mime_types;
 }
 
+/**
+ * Форматирует массив ошибок в строку
+ *
+ * @param array $error_field Массив сообщений ошибок
+ * @return string Список сообщений ошибок через запятую в виде строки
+ */
 function format_validation_errors(array $error_field): string
 {
     if (empty($error_field)) {

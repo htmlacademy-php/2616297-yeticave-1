@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 /**
  * @var string[] $categories_list Список категорий
+ * @var array<string, string[]> $errors Ассоциативный массив ошибок валидации
+ * @var array<string, mixed> $form_data Массив заполненных данных формы
  */
 ?>
 <main>
