@@ -32,7 +32,7 @@ function get_open_lots(mysqli $conn): array
         ORDER BY l.created_at DESC
         LIMIT 9
         SQL
-    );
+    )->fetch_all(MYSQLI_ASSOC);
 }
 
 /**
@@ -59,7 +59,7 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
         WHERE l.id = ?;
         SQL,
         [$lot_id],
-    );
+    )->fetch_all(MYSQLI_ASSOC);
 }
 
 function add_lot(mysqli $conn, array $lot_data)
@@ -71,7 +71,7 @@ function add_lot(mysqli $conn, array $lot_data)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?);
         SQL,
         $lot_data,
-    );
+    )->fetch_all(MYSQLI_ASSOC);
 }
 
 function get_category_by_slug(mysqli $conn, string $slug): array
