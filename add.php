@@ -18,6 +18,8 @@ $conn = require_once 'init.php';
 $page_title = 'Добавить новый лот';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $hours_in_day = 24;
+
     $errors = validate(
         array_merge_recursive($_POST, $_FILES),
         [
@@ -27,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'lot-img' => ['required', mime_type_in(['image/png', 'image/jpeg', 'image/jpg'])],
             'lot-rate' => ['required', 'valid_integer', greater_than(0)],
             'lot-step' => ['required', 'valid_integer', greater_than(0)],
-            'lot-date' => ['required', 'date_convertable'],
+            'lot-date' => ['required', 'date_convertable', hours_after_now($hours_in_day)],
         ],
     );
 

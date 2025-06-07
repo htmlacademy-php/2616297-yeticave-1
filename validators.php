@@ -142,3 +142,26 @@ function mime_type_in(array $mime_types): callable
         return false;
     };
 }
+
+function hours_after_now(int $hours): callable
+{
+    return function (mixed $value) use ($hours): string|bool {
+        if ($value === null) {
+            return false;
+        }
+
+        $dt_range = get_dt_range($value);
+        $hours_after_now = (int)($dt_range['hours'] ?? 0);
+
+        if ($hours_after_now < $hours) {
+            $required_time = (new DateTime())
+                ->add(new DateInterval("PT{$hours}H"))
+                ->format('d.m.Y H:i');
+
+            return "Дата должна быть не раньше {$required_time} (на {$hours} "
+                   . get_noun_plural_form($hours, 'час', 'часа', 'часов') . " позже текущего времени)";
+        }
+
+        return false;
+    };
+}
