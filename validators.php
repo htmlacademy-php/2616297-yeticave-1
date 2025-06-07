@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once 'helpers.php';
+
 /**
  * Функция-валидатор, проверяет что данные являются целым числом
  *
@@ -38,6 +40,14 @@ function required(mixed $value): string|bool
         default => false,
     };
 
+    if (
+        is_array($value)
+        && isset($value['error'])
+        && $value['error'] === 4
+    ) {
+        $is_valid = false;
+    }
+
     return $is_valid ? false : 'Значение обязательно';
 }
 
@@ -69,5 +79,66 @@ function greater_than(int $min): callable
         };
 
         return $is_valid ? false : "Значение должно быть больше {$min}";
+    };
+}
+
+function character_limit(int $max): callable
+{
+    return function (mixed $value) use ($max): string|bool {
+        if ($value === null) {
+            return false;
+        }
+
+        $value = (string)$value;
+
+        if (mb_strlen($value) > $max) {
+            return "Значение не должно быть больше $max символов";
+        }
+
+        return false;
+    };
+}
+
+function date_convertable(mixed $value): string|bool
+{
+    if ($value === null) {
+        return false;
+    }
+
+    $is_convertable = is_date_valid((string)$value);
+
+    if ($is_convertable === false) {
+        return 'Необходимый формат даты - ГГГГ-ММ-ДД';
+    }
+
+    return false;
+}
+
+function mime_type_in(array $mime_types): callable
+{
+    return function (mixed $value) use ($mime_types): string|bool {
+        if ($value === null) {
+            return false;
+        }
+
+        $file_name = $value['tmp_name'] ?? '';
+
+        if (!is_uploaded_file($file_name)) {
+            return false;
+        }
+
+        $mime_type = mime_content_type($file_name);
+
+        if ($mime_type === false) {
+            return false;
+        }
+
+        $allowed_extensions = mime_to_ext($mime_types);
+
+        if (!in_array($mime_type, $mime_types)) {
+            return 'Допустимые форматы файла: ' . implode(', ', $allowed_extensions);
+        }
+
+        return false;
     };
 }
