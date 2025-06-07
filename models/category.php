@@ -19,5 +19,5 @@ function get_all_categories(mysqli $conn): array
         FROM categories
         LIMIT 20
         SQL
-    );
+    )->fetch_all(MYSQLI_ASSOC);
 }

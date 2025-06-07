@@ -62,16 +62,18 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
     )->fetch_all(MYSQLI_ASSOC);
 }
 
-function add_lot(mysqli $conn, array $lot_data)
+function add_lot(mysqli $conn, array $lot_data): int|string
 {
-    return execute_query(
+    execute_query(
         $conn,
         <<<SQL
         INSERT INTO lots (name, description, img_url, start_price, end_date, betting_step, user_id, category_id)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?);
         SQL,
         $lot_data,
-    )->fetch_all(MYSQLI_ASSOC);
+    );
+
+    return mysqli_insert_id($conn);
 }
 
 function get_category_by_slug(mysqli $conn, string $slug): array
@@ -84,5 +86,5 @@ function get_category_by_slug(mysqli $conn, string $slug): array
         WHERE slug = ?
         SQL,
         [$slug],
-    );
+    )->fetch_all(MYSQLI_ASSOC);
 }
