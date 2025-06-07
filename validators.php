@@ -19,7 +19,7 @@ function valid_integer(mixed $value): string|bool
     $is_valid = filter_var($value, FILTER_VALIDATE_INT);
 
     if ($is_valid === false) {
-        return 'Значение не является числом';
+        return 'Значение поля не является числом';
     }
 
     return false;
@@ -48,7 +48,7 @@ function required(mixed $value): string|bool
         $is_valid = false;
     }
 
-    return $is_valid ? false : 'Значение обязательно';
+    return $is_valid ? false : 'Поле обязательно к заполнению';
 }
 
 /**
@@ -78,7 +78,7 @@ function greater_than(int $min): callable
             default => false,
         };
 
-        return $is_valid ? false : "Значение должно быть больше {$min}";
+        return $is_valid ? false : "Значение поля должно быть больше {$min}";
     };
 }
 
@@ -98,7 +98,7 @@ function character_limit(int $max): callable
         $value = (string)$value;
 
         if (mb_strlen($value) > $max) {
-            return "Значение не должно быть больше $max символов";
+            return "Поле не должно быть больше $max символов";
         }
 
         return false;
