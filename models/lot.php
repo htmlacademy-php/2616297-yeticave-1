@@ -61,3 +61,28 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
         [$lot_id],
     );
 }
+
+function add_lot(mysqli $conn, array $lot_data)
+{
+    return execute_query(
+        $conn,
+        <<<SQL
+        INSERT INTO lots (name, description, img_url, start_price, end_date, betting_step, user_id, category_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+        SQL,
+        $lot_data,
+    );
+}
+
+function get_category_by_slug(mysqli $conn, string $slug): array
+{
+    return execute_query(
+        $conn,
+        <<<SQL
+        SELECT id
+        FROM categories
+        WHERE slug = ?
+        SQL,
+        [$slug],
+    );
+}
