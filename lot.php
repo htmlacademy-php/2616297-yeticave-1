@@ -41,8 +41,6 @@ if (empty($lot)) {
     exit_with_message('Лот не найден', 404);
 }
 
-$flatten_lot = array_merge(...array_values($lot));
-
 $page_title = $flatten_lot['name'] ?? '';
 
 $categories_list = get_all_categories($conn);
@@ -50,7 +48,7 @@ $categories_list = get_all_categories($conn);
 $page_content = include_template(
     'lot.php',
     [
-        'lot' => $flatten_lot,
+        'lot' => $lot,
         'categories_list' => $categories_list,
     ],
 );

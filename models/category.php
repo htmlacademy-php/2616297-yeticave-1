@@ -12,7 +12,7 @@ require_once 'helpers.php';
  */
 function get_all_categories(mysqli $conn): array
 {
-    return execute_query(
+    $result = execute_query(
         $conn,
         <<<SQL
         SELECT name, slug
@@ -20,4 +20,6 @@ function get_all_categories(mysqli $conn): array
         LIMIT 20
         SQL
     )->fetch_all(MYSQLI_ASSOC);
+
+    return array_merge(...array_values($result));
 }

@@ -42,7 +42,7 @@ function get_open_lots(mysqli $conn): array
  */
 function get_lot_by_id(mysqli $conn, int $lot_id): array
 {
-    return execute_query(
+    $result = execute_query(
         $conn,
         <<<SQL
         SELECT l.name,
@@ -60,6 +60,8 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
         SQL,
         [$lot_id],
     )->fetch_all(MYSQLI_ASSOC);
+
+    return array_merge(...array_values($result));
 }
 
 function add_lot(mysqli $conn, array $lot_data): int|string

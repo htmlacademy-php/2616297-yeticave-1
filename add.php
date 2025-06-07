@@ -33,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (empty($errors)) {
         $category_id = get_category_by_slug($conn, $_POST['category']);
-        $flatten_lot = array_merge(...array_values($category_id));
         $new_file_name = 'uploads/' . htmlspecialchars($_FILES['lot-img']['name']);
         move_uploaded_file($_FILES['lot-img']['tmp_name'], $new_file_name);
 
@@ -47,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_POST['lot-date'],
                 $_POST['lot-step'],
                 1,
-                $flatten_lot['id'],
+                $category_id['id'],
             ]
         );
 
