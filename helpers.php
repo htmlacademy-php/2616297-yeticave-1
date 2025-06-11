@@ -326,7 +326,7 @@ function mime_to_ext(array $mime_types): array
         'application/x-httpd-php' => 'php',
     ];
 
-    foreach($mime_types as &$mime) {
+    foreach ($mime_types as &$mime) {
         $mime = $mime_map[$mime] ?? $mime;
     }
 
@@ -346,4 +346,32 @@ function format_validation_errors(array $error_field): string
     }
 
     return implode(', ', $error_field);
+}
+
+/**
+ * Загружает файл в директорию сайта
+ *
+ * @param string $file_name Имя загруженного файла
+ * @param string $file_path Путь к временной директории
+ * @param string $file_prefix Префикс для нового имени
+ * @return array<string, string>|bool Ассоциативный массив с результатом загрузки файла
+ */
+function upload_file(
+    string $file_name,
+    string $file_path,
+    string $file_prefix = ''
+):array|bool {
+    $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
+    $new_file_path = 'uploads/' . uniqid($file_prefix) . '.' . $file_extension;
+
+    if (move_uploaded_file($file_path, $new_file_path) === true) {
+        return [
+            'status' => true,
+            'file_path' => $new_file_path,
+        ];
+    }
+
+    return [
+        'status' => false,
+    ];
 }
