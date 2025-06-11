@@ -41,7 +41,7 @@ if (empty($lot)) {
     exit_with_message('Лот не найден', 404);
 }
 
-$page_title = $flatten_lot['name'] ?? '';
+$page_title = $lot['name'] ?? '';
 
 $categories_list = get_all_categories($conn);
 
