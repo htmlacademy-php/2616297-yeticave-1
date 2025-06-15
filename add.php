@@ -41,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         header("Location: lot.php?id=$lot_id");
+        die();
     }
 }
 
