@@ -13,7 +13,7 @@ require_once 'models/category.php';
 require_once 'models/lot.php';
 require_once 'validators.php';
 
-$conn = require_once 'init.php';
+[$is_auth, $conn] = require_once 'init.php';
 
 $validation = validate(
     $_GET,

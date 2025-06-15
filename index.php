@@ -12,7 +12,7 @@ require_once 'data.php';
 require_once 'models/category.php';
 require_once 'models/lot.php';
 
-$conn = require_once 'init.php';
+[$is_auth, $conn] = require_once 'init.php';
 
 $page_title = 'Главная';
 
@@ -33,7 +33,7 @@ $html_result = include_template(
         'categories_list' => $categories_list,
         'page_title' => $page_title,
         'is_auth' => $is_auth,
-        'user_name' => $user_name,
+        'user_name' => $_SESSION['name'] ?? null,
         'page_content' => $page_content,
     ],
 );
