@@ -28,7 +28,7 @@ $html_result = include_template(
         'categories_list' => $categories_list,
         'page_title' => $page_title,
         'is_auth' => $is_auth,
-        'user_name' => $_SESSION['name'] ?? null,
+        'user_name' => $user_name,
         'page_content' => $page_content,
     ],
 );
