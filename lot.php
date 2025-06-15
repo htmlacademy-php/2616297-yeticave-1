@@ -46,6 +46,7 @@ $page_content = include_template(
     [
         'lot' => $lot,
         'categories_list' => $categories_list,
+        'is_auth' => $is_auth,
     ],
 );
 
