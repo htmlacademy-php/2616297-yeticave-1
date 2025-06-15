@@ -44,3 +44,42 @@ function is_email_exists(mysqli $conn, string $email): bool
 
     return !empty($result);
 }
+
+function find_user_by_email(mysqli $conn, string $email): array
+{
+    $result = execute_query(
+        $conn,
+        <<<SQL
+        SELECT id, email, first_name, password_hash
+        FROM users
+        WHERE email = ?;
+        SQL,
+        [$email],
+    )->fetch_all(MYSQLI_ASSOC);
+
+    return array_merge(...array_values($result));
+}
+
+function authenticate_user(mysqli $conn, string $email, string $password): array
+{
+    $user = find_user_by_email($conn, $email);
+
+    if (!password_verify($password, $user['password_hash'])) {
+        return [
+            'errors' => [
+                'password' => [
+                    'Неверный пароль',
+                ],
+            ],
+        ];
+    }
+
+    return [
+        'errors' => [],
+        'user_data' => [
+            'user_id' => $user['id'],
+            'email' => $user['email'],
+            'name' => $user['first_name'],
+        ]
+    ];
+}
