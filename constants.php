@@ -57,4 +57,5 @@ const PROTECTED_PAGES = [
  */
 const GUEST_ONLY_PAGES = [
     '/sign-up.php',
+    '/login.php',
 ];
