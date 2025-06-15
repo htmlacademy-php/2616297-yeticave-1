@@ -71,9 +71,10 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
  * @param mysqli $conn Ресурс подключения в БД
  * @param array $fields Текстовые данные
  * @param array $img_file Массив с данными фотографии
+ * @param int $user_id Идентификатор пользователя, создателя лота
  * @return int|string Уникальный идентификатор добавленного лота
  */
-function add_lot(mysqli $conn, array $fields, array $img_file): int|string
+function add_lot(mysqli $conn, array $fields, array $img_file, int $user_id): int|string
 {
     $category_id = get_category_by_slug($conn, $fields['category']);
     $file_upload = upload_file($img_file['name'], $img_file['tmp_name'], 'img-');

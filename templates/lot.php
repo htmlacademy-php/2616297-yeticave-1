@@ -13,6 +13,7 @@ declare(strict_types=1);
  *     category_id: int|null
  * } $lot Массив с информацией о конкретном лоте
  * @var string[] $categories_list Список категорий
+ * @var bool $is_auth Флаг авторизации
  */
 ?>
 <main>
@@ -57,6 +58,7 @@ declare(strict_types=1);
                             Мин. ставка <span><?= format_price($lot['betting_step'] ?? 0); ?></span>
                         </div>
                     </div>
+                    <?php if ($is_auth === true): ?>
                     <!--
                     <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post" autocomplete="off">
                         <p class="lot-item__form-item form__item form__item--invalid">
@@ -67,6 +69,7 @@ declare(strict_types=1);
                         <button type="submit" class="button">Сделать ставку</button>
                     </form>
                     -->
+                    <?php endif; ?>
                 </div>
                 <!--
                 <div class="history">

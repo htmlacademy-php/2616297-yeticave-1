@@ -1,19 +1,15 @@
 <?php
 
-/**
- * @var bool $is_auth Флаг авторизации
- * @var string $user_name Имя пользователя
- */
-
 declare(strict_types=1);
 
 require_once 'helpers.php';
-require_once 'data.php';
 require_once 'models/category.php';
 require_once 'models/lot.php';
 require_once 'validators.php';
 
-$conn = require_once 'init.php';
+[$is_auth, $conn] = require_once 'init.php';
+
+$user_name = $_SESSION['name'] ?? null;
 
 $validation = validate(
     $_GET,
@@ -50,6 +46,7 @@ $page_content = include_template(
     [
         'lot' => $lot,
         'categories_list' => $categories_list,
+        'is_auth' => $is_auth,
     ],
 );
 
