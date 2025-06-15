@@ -13,7 +13,7 @@ require_once 'models/category.php';
 require_once 'models/lot.php';
 require_once 'validators.php';
 
-$conn = require_once 'init.php';
+[$is_auth, $conn] = require_once 'init.php';
 
 $page_title = 'Добавить новый лот';
 
@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn,
             $_POST,
             $_FILES['lot-img'],
+            (int)$_SESSION['user_id'],
         );
 
         header("Location: lot.php?id=$lot_id");
