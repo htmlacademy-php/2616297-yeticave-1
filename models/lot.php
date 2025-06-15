@@ -76,18 +76,16 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
 function add_lot(mysqli $conn, array $fields, array $img_file): int|string
 {
     $category_id = get_category_by_slug($conn, $fields['category']);
-    $file_extension = pathinfo($img_file['name'], PATHINFO_EXTENSION);
-    $new_file_path = 'uploads/' . uniqid('img-') . '.' . $file_extension;
-    $is_file_uploaded = move_uploaded_file($img_file['tmp_name'], $new_file_path);
+    $file_upload = upload_file($img_file['name'], $img_file['tmp_name'], 'img-');
 
-    if ($is_file_uploaded === false) {
+    if (($file_upload['status'] ?? false) === false) {
         exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
     }
 
     $lot_data = [
         $fields['lot-name'],
         $fields['message'],
-        "/$new_file_path",
+        $file_upload['file_path'] ?? '',
         $fields['lot-rate'],
         $fields['lot-date'],
         $fields['lot-step'],

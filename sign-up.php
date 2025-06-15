@@ -11,43 +11,43 @@ require_once 'helpers.php';
 require_once 'data.php';
 require_once 'models/category.php';
 require_once 'models/lot.php';
+require_once 'models/user.php';
 require_once 'validators.php';
 
 $conn = require_once 'init.php';
 
-$page_title = 'Добавить новый лот';
+$page_title = 'Регистрация';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $hours_in_day = 24;
-
     $errors = validate(
         array_merge_recursive($_POST, $_FILES),
         [
-            'lot-name' => ['required', character_limit(128)],
-            'category' => ['required'],
-            'message' => ['required', character_limit(512)],
-            'lot-img' => ['required', mime_type_in(['image/png', 'image/jpeg', 'image/jpg'])],
-            'lot-rate' => ['required', 'valid_integer', greater_than(0)],
-            'lot-step' => ['required', 'valid_integer', greater_than(0)],
-            'lot-date' => ['required', 'date_convertable', hours_after_now($hours_in_day)],
+            'email' => ['required', 'valid_email', unique_email($conn)],
+            'password' => ['required'],
+            'name' => ['required', character_limit(129)],
+            'message' => ['required', character_limit(256)],
         ],
     );
 
     if (empty($errors)) {
-        $lot_id = add_lot(
+        add_user(
             $conn,
-            $_POST,
-            $_FILES['lot-img'],
+            [
+                $_POST['email'],
+                $_POST['name'],
+                password_hash($_POST['password'], PASSWORD_BCRYPT),
+                $_POST['message'],
+            ]
         );
 
-        header("Location: lot.php?id=$lot_id");
+        header('Location: /login.php');
     }
 }
 
 $categories_list = get_all_categories($conn);
 
 $page_content = include_template(
-    'add.php',
+    'sign-up.php',
     [
         'categories_list' => $categories_list,
         'errors' => $errors ?? [],

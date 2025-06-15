@@ -24,7 +24,7 @@ CREATE TABLE users
     email         VARCHAR(128) NOT NULL UNIQUE,
     first_name    VARCHAR(128) NOT NULL,
     password_hash CHAR(60)     NOT NULL,
-    contact_info  VARCHAR(256) COMMENT 'Контактная информация для связи с пользователем',
+    contact_info  VARCHAR(256) NOT NULL COMMENT 'Контактная информация для связи с пользователем',
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE = INNODB;
@@ -69,9 +69,9 @@ VALUES ('Доски и лыжи', 'boards'),
        ('Инструменты', 'tools'),
        ('Разное', 'other');
 
-INSERT INTO users (email, first_name, password_hash)
-VALUES ('test@test.com', 'Артём', '$2y$12$4Umg0rCJwMswRw/l.SwHvuQV01coP0eWmGzd61QH2RvAOMANUBGC.'),
-       ('unique@test.com', 'Вероника', '$2y$13$xeDfQumlmdm0Sco.4qmH1OGfUUmOcuRmfae0dPJhjX1Bq0yYhqbNi');
+INSERT INTO users (email, first_name, password_hash, contact_info)
+VALUES ('test@test.com', 'Артём', '$2y$12$4Umg0rCJwMswRw/l.SwHvuQV01coP0eWmGzd61QH2RvAOMANUBGC.', ''),
+       ('unique@test.com', 'Вероника', '$2y$13$xeDfQumlmdm0Sco.4qmH1OGfUUmOcuRmfae0dPJhjX1Bq0yYhqbNi', '');
 
 INSERT INTO lots (name, description, img_url, start_price, end_date, betting_step, user_id, category_id)
 VALUES ('2014 Rossignol District Snowboard', '', '/img/lot-1.jpg', 10999, DATE_ADD(NOW(), INTERVAL 7 DAY), 150, 1, 1),
