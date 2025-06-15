@@ -44,7 +44,7 @@ function required(mixed $value): string|bool
     if (
         is_array($value)
         && isset($value['error'])
-        && $value['error'] === 4
+        && $value['error'] === UPLOAD_ERR_NO_FILE
     ) {
         $is_valid = false;
     }
