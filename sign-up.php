@@ -19,8 +19,6 @@ $conn = require_once 'init.php';
 $page_title = 'Регистрация';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $hours_in_day = 24;
-
     $errors = validate(
         array_merge_recursive($_POST, $_FILES),
         [
