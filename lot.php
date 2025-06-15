@@ -15,6 +15,8 @@ require_once 'validators.php';
 
 [$is_auth, $conn] = require_once 'init.php';
 
+$user_name = $_SESSION['name'] ?? null;
+
 $validation = validate(
     $_GET,
     [

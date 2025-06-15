@@ -14,6 +14,7 @@ require_once 'models/lot.php';
 
 [$is_auth, $conn] = require_once 'init.php';
 
+$user_name = $_SESSION['name'] ?? null;
 $page_title = 'Главная';
 
 $lots_list = get_open_lots($conn);

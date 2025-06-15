@@ -17,6 +17,7 @@ require_once 'validators.php';
 [$is_auth, $conn] = require_once 'init.php';
 
 $page_title = 'Войти';
+$user_name = $_SESSION['name'] ?? null;
 
 $categories_list = get_all_categories($conn);
 

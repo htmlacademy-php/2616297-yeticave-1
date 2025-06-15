@@ -16,6 +16,7 @@ require_once 'validators.php';
 
 [$is_auth, $conn] = require_once 'init.php';
 
+$user_name = $_SESSION['name'] ?? null;
 $page_title = 'Регистрация';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
