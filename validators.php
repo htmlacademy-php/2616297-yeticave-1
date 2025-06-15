@@ -191,6 +191,12 @@ function hours_after_now(int $hours): callable
     };
 }
 
+/**
+ * Проверяет что значение является адресом электронной почты
+ *
+ * @param mixed $value Данные для валидации
+ * @return string|bool Сообщение об ошибке, либо false если значение проходит валидацию
+ */
 function valid_email(mixed $value): string|bool
 {
     if ($value === null) {
@@ -203,7 +209,12 @@ function valid_email(mixed $value): string|bool
 
     return false;
 }
-
+/**
+ * Проверят что адреса электронной почты не существует в БД
+ *
+ * @param mysqli $conn Ресурс соединения с БД
+ * @return callable Функция-валидатор
+ */
 function unique_email(mysqli $conn): callable
 {
     return function (mixed $value) use ($conn): string|bool {
