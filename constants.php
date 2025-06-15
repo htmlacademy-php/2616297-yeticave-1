@@ -44,3 +44,17 @@ const MIME_MAP = [
     'application/javascript' => 'js',
     'application/x-httpd-php' => 'php',
 ];
+
+/**
+ * Список страниц где для доступа необходима авторизация
+ */
+const PROTECTED_PAGES = [
+    '/add.php',
+];
+
+/**
+ * Список страниц с доступом для не авторизированных пользователй
+ */
+const GUEST_ONLY_PAGES = [
+    '/sign-up.php',
+];
