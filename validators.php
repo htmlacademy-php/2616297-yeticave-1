@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once 'helpers.php';
+require_once 'models/user.php';
 
 /**
  * Функция-валидатор, проверяет что данные являются целым числом
@@ -184,6 +185,34 @@ function hours_after_now(int $hours): callable
 
             return "Дата должна быть не раньше {$required_time} (на {$hours} "
                    . get_noun_plural_form($hours, 'час', 'часа', 'часов') . " позже текущего времени)";
+        }
+
+        return false;
+    };
+}
+
+function valid_email(mixed $value): string|bool
+{
+    if ($value === null) {
+        return false;
+    }
+
+    if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
+        return 'Введите корректный e-mail';
+    }
+
+    return false;
+}
+
+function unique_email(mysqli $conn): callable
+{
+    return function (mixed $value) use ($conn): string|bool {
+        if ($value === null) {
+            return false;
+        }
+
+        if (is_email_exists($conn, $value) === true) {
+            return 'E-mail занят';
         }
 
         return false;
