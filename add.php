@@ -7,7 +7,13 @@ require_once 'models/category.php';
 require_once 'models/lot.php';
 require_once 'validators.php';
 
-[$is_auth, $conn] = require_once 'init.php';
+$conn = require_once 'init.php';
+
+$is_auth = is_authorized();
+
+if ($is_auth === false) {
+    exit_with_message('Доступ запрещён', 403);
+}
 
 $user_name = $_SESSION['name'] ?? null;
 $page_title = 'Добавить новый лот';

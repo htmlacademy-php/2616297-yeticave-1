@@ -6,7 +6,9 @@ require_once 'helpers.php';
 require_once 'models/category.php';
 require_once 'models/lot.php';
 
-[$is_auth, $conn] = require_once 'init.php';
+$conn = require_once 'init.php';
+
+$is_auth = is_authorized();
 
 $user_name = $_SESSION['name'] ?? null;
 $page_title = 'Главная';

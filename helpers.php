@@ -337,3 +337,23 @@ function upload_file(
         'status' => false,
     ];
 }
+
+/**
+ * Проверяет авторизацию текущего пользователя
+ *
+ * @return bool true/false в зависимости от того, есть ли авторизация
+ */
+function is_authorized(): bool
+{
+    return isset($_SESSION['user_id']);
+}
+
+/**
+ * Возвращает имя пользователя
+ *
+ * @return string|null Имя пользователя либо null если пользователь не авторизирован
+ */
+function get_user_name(): ?string
+{
+    return $_SESSION['username'] ?? null;
+}
