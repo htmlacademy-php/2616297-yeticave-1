@@ -11,7 +11,7 @@ $conn = require_once 'init.php';
 
 $is_auth = is_authorized();
 
-$user_name = $_SESSION['name'] ?? null;
+$user_name = get_user_name();
 
 $validation = validate(
     $_GET,

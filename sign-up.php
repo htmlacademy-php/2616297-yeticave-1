@@ -16,7 +16,7 @@ if ($is_auth === true) {
     exit_with_message('Доступ запрещён', 403);
 }
 
-$user_name = $_SESSION['name'] ?? null;
+$user_name = get_user_name();
 $page_title = 'Регистрация';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

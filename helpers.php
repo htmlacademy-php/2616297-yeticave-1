@@ -345,7 +345,7 @@ function upload_file(
  */
 function is_authorized(): bool
 {
-    return isset($_SESSION['user_id']);
+    return isset($_SESSION['user_data']['user_id']);
 }
 
 /**
@@ -355,5 +355,5 @@ function is_authorized(): bool
  */
 function get_user_name(): ?string
 {
-    return $_SESSION['username'] ?? null;
+    return $_SESSION['user_data']['name'] ?? null;
 }

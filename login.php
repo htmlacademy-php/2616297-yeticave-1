@@ -17,7 +17,7 @@ if ($is_auth === true) {
 }
 
 $page_title = 'Войти';
-$user_name = $_SESSION['name'] ?? null;
+$user_name = get_user_name();
 
 $categories_list = get_all_categories($conn);
 
@@ -109,7 +109,7 @@ if (!empty($errors)) {
     die();
 }
 
-$_SESSION = array_merge($_SESSION, $result['user_data']);
+$_SESSION['user_data'] = $result['user_data'];
 
 header('Location: /');
 die();

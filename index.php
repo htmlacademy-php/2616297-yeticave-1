@@ -10,7 +10,7 @@ $conn = require_once 'init.php';
 
 $is_auth = is_authorized();
 
-$user_name = $_SESSION['name'] ?? null;
+$user_name = get_user_name();
 $page_title = 'Главная';
 
 $lots_list = get_open_lots($conn);
