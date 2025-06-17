@@ -3,6 +3,16 @@
 declare(strict_types=1);
 
 require_once 'helpers.php';
+require_once 'constants.php';
+
+$is_session_started = session_start();
+
+if (!$is_session_started) {
+    exit_with_message(
+        'возникла техническая ошибка. Пожалуйста, попробуйте обновить страницу или зайти позже.',
+        500
+    );
+}
 
 $config = require_once './config/autoload.php';
 

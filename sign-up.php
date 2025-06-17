@@ -1,14 +1,8 @@
 <?php
 
-/**
- * @var bool $is_auth Флаг авторизации
- * @var string $user_name Имя пользователя
- */
-
 declare(strict_types=1);
 
 require_once 'helpers.php';
-require_once 'data.php';
 require_once 'models/category.php';
 require_once 'models/lot.php';
 require_once 'models/user.php';
@@ -16,6 +10,13 @@ require_once 'validators.php';
 
 $conn = require_once 'init.php';
 
+$is_auth = is_authorized();
+
+if ($is_auth === true) {
+    exit_with_message('Доступ запрещён', 403);
+}
+
+$user_name = get_user_name();
 $page_title = 'Регистрация';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -41,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
 
         header('Location: /login.php');
+        die();
     }
 }
 

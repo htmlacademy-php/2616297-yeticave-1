@@ -316,13 +316,13 @@ function format_validation_errors(array $error_field): string
  * @param string $file_name Имя загруженного файла
  * @param string $file_path Путь к временной директории
  * @param string $file_prefix Префикс для нового имени
- * @return array<string, string>|bool Ассоциативный массив с результатом загрузки файла
+ * @return array<string, string|bool> Ассоциативный массив с результатом загрузки файла
  */
 function upload_file(
     string $file_name,
     string $file_path,
     string $file_prefix = ''
-):array|bool {
+):array {
     $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
     $new_file_path = 'uploads/' . uniqid($file_prefix) . '.' . $file_extension;
 
@@ -336,4 +336,24 @@ function upload_file(
     return [
         'status' => false,
     ];
+}
+
+/**
+ * Проверяет авторизацию текущего пользователя
+ *
+ * @return bool true/false в зависимости от того, есть ли авторизация
+ */
+function is_authorized(): bool
+{
+    return isset($_SESSION['user_data']['user_id']);
+}
+
+/**
+ * Возвращает имя пользователя
+ *
+ * @return string|null Имя пользователя либо null если пользователь не авторизирован
+ */
+function get_user_name(): ?string
+{
+    return $_SESSION['user_data']['name'] ?? null;
 }

@@ -1,20 +1,21 @@
 <?php
 
-/**
- * @var bool $is_auth Флаг авторизации
- * @var string $user_name Имя пользователя
- */
-
 declare(strict_types=1);
 
 require_once 'helpers.php';
-require_once 'data.php';
 require_once 'models/category.php';
 require_once 'models/lot.php';
 require_once 'validators.php';
 
 $conn = require_once 'init.php';
 
+$is_auth = is_authorized();
+
+if ($is_auth === false) {
+    exit_with_message('Доступ запрещён', 403);
+}
+
+$user_name = get_user_name();
 $page_title = 'Добавить новый лот';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -38,9 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn,
             $_POST,
             $_FILES['lot-img'],
+            (int)$_SESSION['user_id'],
         );
 
         header("Location: lot.php?id=$lot_id");
+        die();
     }
 }
 
