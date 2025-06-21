@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 /**
+ * @var string $search_query Строка запроса
  * @var string[] $categories_list Список категорий
  * @var string $page_title Заголовок страницы
  * @var bool $is_auth Флаг авторизации
@@ -25,11 +26,11 @@ declare(strict_types=1);
     <header class="main-header">
         <div class="main-header__container container">
             <h1 class="visually-hidden">YetiCave</h1>
-            <a class="main-header__logo">
+            <a class="main-header__logo" href="/">
                 <img src="../img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
             </a>
             <form class="main-header__search" method="get" action="/search.php" autocomplete="off">
-                <input type="search" name="search" placeholder="Поиск лота">
+                <input type="search" name="search" placeholder="Поиск лота" value="<?= $search_query ?? ''; ?>">
                 <input class="main-header__search-btn" type="submit" name="find" value="Найти">
             </form>
             <a class="main-header__add-lot button" href="/add.php">Добавить лот</a>
