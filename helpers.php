@@ -322,7 +322,7 @@ function upload_file(
     string $file_name,
     string $file_path,
     string $file_prefix = ''
-):array {
+): array {
     $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
     $new_file_path = 'uploads/' . uniqid($file_prefix) . '.' . $file_extension;
 
@@ -356,4 +356,80 @@ function is_authorized(): bool
 function get_user_name(): ?string
 {
     return $_SESSION['user_data']['name'] ?? null;
+}
+
+/**
+ * Возвращает ссылки пагинации
+ *
+ * @param int $limit Число элементов на странице
+ * @param int $page_number Номер текущей страницы
+ * @param int $total Общее количество элементов
+ * @return array Ассоциативный массив, где pages - массив ссылок пагинации, prev и next - ссылки для кнопок
+ *               Назад и Вперед соответственно
+ */
+function calculate_pager_state(
+    int $limit,
+    int $page_number,
+    int $total
+): array {
+    $total_pages = (int)ceil($total / $limit);
+
+    $result = [
+        'pages' => [],
+        'prev' => null,
+        'next' => null,
+    ];
+
+    if ($total_pages <= 1) {
+        return $result;
+    }
+
+    if ($page_number > 1) {
+        $result['prev'] = $page_number - 1;
+    }
+
+    if ($page_number + 1 <= $total_pages) {
+        $result['next'] = $page_number + 1;
+    }
+
+    for ($page = 1; $page <= $total_pages; $page++) {
+        $result['pages'][$page] = [
+            'current' => $page === $page_number,
+        ];
+    }
+
+    return $result;
+}
+
+/**
+ * Возвращает смещение поиска записей для текущей страницы
+ *
+ * @param int $limit Число элементов на странице
+ * @param int $page_number Номер текущей страницы
+ * @return int Смещение поиска записей для текущей страницы
+ */
+function get_current_page_offset(
+    int $limit,
+    int $page_number,
+): int {
+    if ($page_number < 1) {
+        return 0;
+    }
+
+    return ($page_number - 1) * $limit;
+}
+
+/**
+ * Меняет текущую строку запроса, добавляя/изменяя GET параметры
+ *
+ * @param array $params Список параметров которые необходимо добавить в строку
+ * @return string Новая измененная строка
+ */
+function change_get_parameter(array $params): string
+{
+    return '?' . http_build_query(
+            array_merge($_GET, $params),
+            '',
+            '&amp;'
+        );
 }
