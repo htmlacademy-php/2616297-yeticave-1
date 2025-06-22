@@ -111,3 +111,68 @@ function add_lot(mysqli $conn, array $fields, array $img_file, int $user_id): in
 
     return $new_lot_id;
 }
+
+/**
+ * Производит поиск лотов по запросу
+ *
+ * @param mysqli $conn Ресурс подключения в БД
+ * @param string $search_query Строка запроса
+ * @param int $page_limit Лимит лотов для поиска
+ * @param int $current_page Номер текущей страницы
+ * @return array Список найденных лотов вместе с информацией о других страницах
+ */
+function find_lots_by(
+    mysqli $conn,
+    string $search_query,
+    int $page_limit = 9,
+    int $current_page = 1,
+): array {
+    $offset = get_current_page_offset($page_limit, $current_page);
+
+    $result = execute_query(
+        $conn,
+        <<<SQL
+        SELECT l.id,
+               l.name,
+               l.start_price,
+               l.img_url,
+               l.end_date,
+               c.name           AS category_name
+        FROM lots l
+                 JOIN categories c on c.id = l.category_id
+                 LEFT JOIN buy_orders b on l.id = b.lot_id
+        WHERE MATCH (l.name, l.description) AGAINST (?)
+        GROUP BY l.id, l.created_at
+        LIMIT ?
+        OFFSET ?
+        SQL,
+        [
+            $search_query,
+            $page_limit,
+            $offset,
+        ],
+    )->fetch_all(MYSQLI_ASSOC);
+
+    $total = (int)execute_query(
+        $conn,
+        <<<SQL
+        SELECT COUNT(*) as total
+        FROM lots l
+                 JOIN categories c on c.id = l.category_id
+                 LEFT JOIN buy_orders b on l.id = b.lot_id
+        WHERE MATCH (l.name, l.description) AGAINST (?)
+        SQL,
+        [$search_query],
+    )->fetch_row()[0];
+
+    $links = calculate_pager_state(
+        $page_limit,
+        $current_page,
+        $total,
+    );
+
+    return [
+        'lots' => $result,
+        'pager_content' => $links,
+    ];
+}

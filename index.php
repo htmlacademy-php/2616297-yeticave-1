@@ -16,11 +16,18 @@ $page_title = 'Главная';
 $lots_list = get_open_lots($conn);
 $categories_list = get_all_categories($conn);
 
+$lots_content = include_template(
+    'lots.php',
+    [
+        'lots_list' => $lots_list,
+    ],
+);
+
 $page_content = include_template(
     'main.php',
     [
         'categories_list' => $categories_list,
-        'lots_list' => $lots_list,
+        'lots' => $lots_content,
     ],
 );
 
