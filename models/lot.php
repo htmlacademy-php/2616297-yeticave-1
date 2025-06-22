@@ -43,13 +43,13 @@ function get_open_lots(mysqli $conn): array
  */
 function get_lot_by_id(mysqli $conn, int $lot_id): array
 {
-    $result = execute_query(
+    $lot = execute_query(
         $conn,
         <<<SQL
         SELECT l.name,
                l.description,
                l.img_url,
-               l.start_price,
+               l.start_price as current_price,
                l.end_date,
                l.betting_step,
                l.user_id,
@@ -62,7 +62,29 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
         [$lot_id],
     )->fetch_all(MYSQLI_ASSOC);
 
-    return array_merge(...array_values($result));
+    $lot = array_merge(...array_values($lot));
+
+    if (empty($lot)) {
+        return $lot;
+    }
+
+    $current_price = execute_query(
+        $conn,
+        <<<SQL
+        SELECT MAX(buy_price) AS current_price
+        FROM buy_orders
+        WHERE lot_id = ?;
+        SQL,
+        [$lot_id],
+    )->fetch_row()[0];
+
+    $lot_has_bid = $current_price !== null;
+
+    if ($lot_has_bid) {
+        $lot['current_price'] = $current_price;
+    }
+
+    return $lot;
 }
 
 /**
