@@ -32,6 +32,10 @@ if (!empty($validation)) {
 
 $lot_id = (int)($_GET['id'] ?? 0);
 
+$categories_list = get_all_categories($conn);
+
+$errors = [];
+
 $lot = get_lot_by_id($conn, $lot_id);
 
 if (empty($lot)) {
@@ -41,26 +45,73 @@ if (empty($lot)) {
 
 $page_title = $lot['name'] ?? '';
 
-$categories_list = get_all_categories($conn);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    $page_content = include_template(
+        'lot.php',
+        [
+            'lot' => $lot,
+            'categories_list' => $categories_list,
+            'is_auth' => $is_auth,
+            'errors' => $errors ?? [],
+            'form_data' => $_POST,
+        ],
+    );
 
-$page_content = include_template(
-    'lot.php',
+    $html_result = include_template(
+        'layout.php',
+        [
+            'categories_list' => $categories_list,
+            'page_title' => $page_title,
+            'is_auth' => $is_auth,
+            'user_name' => $user_name,
+            'page_content' => $page_content,
+        ],
+    );
+
+    print($html_result);
+    die();
+}
+
+$errors = validate(
+    $_POST,
     [
-        'lot' => $lot,
-        'categories_list' => $categories_list,
-        'is_auth' => $is_auth,
+        'cost' => ['required', 'valid_integer', greater_or_equal($lot['min_bid_price'])],
     ],
 );
 
-$html_result = include_template(
-    'layout.php',
-    [
-        'categories_list' => $categories_list,
-        'page_title' => $page_title,
-        'is_auth' => $is_auth,
-        'user_name' => $user_name,
-        'page_content' => $page_content,
-    ],
-);
+if (!empty($errors)) {
+    http_response_code(400);
 
-print($html_result);
+    $page_content = include_template(
+        'lot.php',
+        [
+            'lot' => $lot,
+            'categories_list' => $categories_list,
+            'is_auth' => $is_auth,
+            'errors' => $errors ?? [],
+            'form_data' => $_POST,
+        ],
+    );
+
+    $html_result = include_template(
+        'layout.php',
+        [
+            'categories_list' => $categories_list,
+            'page_title' => $page_title,
+            'is_auth' => $is_auth,
+            'user_name' => $user_name,
+            'page_content' => $page_content,
+        ],
+    );
+
+    print($html_result);
+    die();
+}
+
+$new_bid_price = (int)$_POST['cost'];
+$user_id = get_user_id();
+
+add_new_bid($conn, $lot, $lot_id, $new_bid_price, $user_id);
+
+header('Location: /lot.php?id=' . $lot_id);
+exit();
