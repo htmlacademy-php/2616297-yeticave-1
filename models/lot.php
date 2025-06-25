@@ -84,6 +84,11 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
         $lot['current_price'] = $current_price;
     }
 
+    $min_betting_step = 1;
+    $min_bid_price = $lot['current_price'] + $lot['betting_step'] + $min_betting_step;
+
+    $lot['min_bid_price'] = $min_bid_price;
+
     return $lot;
 }
 
@@ -197,4 +202,27 @@ function find_lots_by(
         'lots' => $result,
         'pager_content' => $links,
     ];
+}
+
+function add_new_bid(mysqli $conn, array $updated_lot, int $lot_id, int $bid_price, int $user_id): void
+{
+    execute_query(
+        $conn,
+        <<<SQL
+        INSERT INTO buy_orders (buy_price, user_id, lot_id)
+        VALUES (?, ?, ?);
+        SQL,
+        [
+            $bid_price,
+            $user_id,
+            $lot_id,
+        ],
+    );
+
+    $new_bid_id = mysqli_insert_id($conn);
+    $is_bid_added = $new_bid_id !== 0;
+
+    if (!$is_bid_added) {
+        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
+    }
 }
