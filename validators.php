@@ -17,10 +17,17 @@ function valid_integer(mixed $value): string|bool
         return false;
     }
 
+    if (
+        is_string($value)
+        && empty($value)
+    ) {
+        return false;
+    }
+
     $is_valid = filter_var($value, FILTER_VALIDATE_INT);
 
     if ($is_valid === false) {
-        return 'Значение поля не является числом';
+        return 'Значение поля не является целым числом';
     }
 
     return false;
@@ -80,6 +87,37 @@ function greater_than(int $min): callable
         };
 
         return $is_valid ? false : "Значение поля должно быть больше {$min}";
+    };
+}
+
+/**
+ * Функция-валидатор, проверяет что данные больше либо равно определенного числового значения
+ *
+ * @param int $min Минимальное числовое значение валидных данных
+ * @return callable Функция-валидатор
+ */
+function greater_or_equal(int $min): callable
+{
+    return function (mixed $value) use ($min): string|bool {
+        if ($value === null) {
+            return false;
+        }
+
+        if (
+            is_string($value)
+            && is_numeric($value)
+        ) {
+            $value = str_contains($value, '.') ? (float)$value : (int)$value;
+        }
+
+        $is_valid = match (true) {
+            is_array($value) => count($value) >= $min,
+            is_int($value), is_double($value), is_float($value) => $value >= $min,
+            is_string($value) => mb_strlen($value) >= $min,
+            default => false,
+        };
+
+        return $is_valid ? false : "Значение поля должно быть больше либо равно {$min}";
     };
 }
 
