@@ -150,10 +150,10 @@ function include_template($name, array $data = [])
  * @param int $price Не отформатированная цена
  * @return string Отформатированная цена с символом рубля
  */
-function format_price(int $price): string
+function format_price(int $price, string $curr_symbol = '₽'): string
 {
     $formatted_price = number_format($price, 0, '', ' ');
-    return "$formatted_price ₽";
+    return "$formatted_price $curr_symbol";
 }
 
 /**
@@ -346,6 +346,16 @@ function upload_file(
 function is_authorized(): bool
 {
     return isset($_SESSION['user_data']['user_id']);
+}
+
+/**
+ * Возвращает id текущего пользователя
+ *
+ * @return int|null Id пользователя если существует, либо null
+ */
+function get_user_id(): ?int
+{
+    return (int)($_SESSION['user_data']['user_id'] ?? null);
 }
 
 /**
