@@ -68,20 +68,23 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
         return $lot;
     }
 
-    $current_price = execute_query(
+    $current_price_with_id = execute_query(
         $conn,
         <<<SQL
-        SELECT MAX(buy_price) AS current_price
+        SELECT MAX(buy_price) AS current_price,
+               user_id
         FROM buy_orders
-        WHERE lot_id = ?;
+        WHERE lot_id = ?
+        GROUP BY user_id;
         SQL,
         [$lot_id],
-    )->fetch_row()[0];
+    )->fetch_assoc();
 
-    $lot_has_bid = $current_price !== null;
+    $lot_has_bid = $current_price_with_id !== null;
 
     if ($lot_has_bid) {
-        $lot['current_price'] = $current_price;
+        $lot['current_price'] = $current_price_with_id['current_price'];
+        $lot['current_bid_user'] = $current_price_with_id['user_id'];
     }
 
     $min_betting_step = 1;
@@ -117,7 +120,7 @@ function add_lot(mysqli $conn, array $fields, array $img_file, int $user_id): in
         $fields['lot-rate'],
         $fields['lot-date'],
         $fields['lot-step'],
-        1,
+        $user_id,
         $category_id['id'],
     ];
 
@@ -204,7 +207,7 @@ function find_lots_by(
     ];
 }
 
-function add_new_bid(mysqli $conn, array $updated_lot, int $lot_id, int $bid_price, int $user_id): void
+function add_new_bid(mysqli $conn, int $lot_id, int $bid_price, int $user_id): void
 {
     execute_query(
         $conn,

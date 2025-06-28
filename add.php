@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn,
             $_POST,
             $_FILES['lot-img'],
-            (int)$_SESSION['user_id'],
+            get_user_id(),
         );
 
         header("Location: lot.php?id=$lot_id");

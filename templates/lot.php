@@ -13,7 +13,7 @@ declare(strict_types=1);
  *     category_id: int|null
  * } $lot Массив с информацией о конкретном лоте
  * @var string[] $categories_list Список категорий
- * @var bool $is_auth Флаг авторизации
+ * @var bool $is_authorized_to_place_bid Флаг проверки что текущий пользователь может сделать ставку
  */
 ?>
 <main>
@@ -58,7 +58,7 @@ declare(strict_types=1);
                             Мин. ставка <span><?= format_price($lot['betting_step'] ?? 0); ?></span>
                         </div>
                     </div>
-                    <?php if ($is_auth === true): ?>
+                    <?php if ($is_authorized_to_place_bid === true): ?>
                     <form class="lot-item__form" method="post" autocomplete="off">
                         <p
                             class="lot-item__form-item form__item <?= isset($errors['cost']) ? 'form__item--invalid' : ''; ?>"
