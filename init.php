@@ -14,6 +14,14 @@ if (!$is_session_started) {
     );
 }
 
+if (!setlocale(LC_ALL, 'ru_RU.UTF-8')) {
+    exit_with_message('Не удалось установить локаль', 500);
+}
+
+if (!date_default_timezone_set('UTC')) {
+    exit_with_message('Не удалось установить часовой пояс', 500);
+}
+
 $config = require_once './config/autoload.php';
 
 $conn = mysqli_connect(
