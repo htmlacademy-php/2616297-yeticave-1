@@ -173,10 +173,43 @@ function get_dt_range(string $string_date): array
         return [
             'hours' => 0,
             'minutes' => 0,
+            'seconds' => 0,
         ];
     }
 
     $range = date_diff($current_time, $end_date);
+
+    $total_hours = ($range->d * 24) + $range->h;
+    $total_minutes = $range->i;
+    $total_seconds = $range->s;
+
+    return [
+        'hours' => $total_hours,
+        'minutes' => $total_minutes,
+        'seconds' => $total_seconds,
+    ];
+}
+
+/**
+ * Возвращает количество прошедших часов и минут с переданной даты до текущего времени
+ * в формате ассоциативного массива. Если дата еще не наступила, возвращает нулевые значения.
+ *
+ * @param string $string_date Начальная дата временного промежутка в формате строки
+ * @return array<string, int> Ассоциативный массив, количество часов и минут временного интервала
+ */
+function get_passed_time(string $string_date): array
+{
+    $current_time = date_create('now');
+    $start_date = date_create($string_date);
+
+    if ($start_date >= $current_time) {
+        return [
+            'hours' => 0,
+            'minutes' => 0,
+        ];
+    }
+
+    $range = date_diff($start_date, $current_time);
 
     $total_hours = ($range->d * 24) + $range->h;
     $total_minutes = $range->i;
@@ -442,4 +475,31 @@ function change_get_parameter(array $params): string
             '',
             '&amp;'
         );
+}
+
+function to_time_ago_format(string $date): string
+{
+    $dt_range = get_passed_time($date);
+    $date_to_format = date_create($date);
+    $yesterday_date = date_create('yesterday');
+    $date_time = date_format($date_to_format, 'H:i');
+    $was_yesterday = $date_to_format->format('Y-m-d') === $yesterday_date->format('Y-m-d');
+
+    return match (true) {
+        $dt_range['hours'] === 0 => $dt_range['minutes'] . ' ' . get_noun_plural_form(
+                $dt_range['minutes'],
+                'минуту',
+                'минуты',
+                'минут'
+            ) . ' назад',
+        $dt_range['hours'] === 1 => 'Час назад',
+        $dt_range['hours'] < 24 && !$was_yesterday => $dt_range['hours'] . ' ' . get_noun_plural_form(
+                $dt_range['hours'],
+                'час',
+                'часа',
+                'часов'
+            ) . ' назад',
+        $was_yesterday => "Вчера, в $date_time",
+        default => date_format($date_to_format, 'd.m.y в H:i'),
+    };
 }
