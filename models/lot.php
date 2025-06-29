@@ -167,10 +167,10 @@ function find_lots_by(
                l.start_price,
                l.img_url,
                l.end_date,
-               c.name           AS category_name
+               c.name           AS category_name,
+               COUNT(*) OVER() as total
         FROM lots l
                  JOIN categories c on c.id = l.category_id
-                 LEFT JOIN buy_orders b on l.id = b.lot_id
         WHERE MATCH (l.name, l.description) AGAINST (?)
         GROUP BY l.id, l.created_at
         LIMIT ?
@@ -183,17 +183,7 @@ function find_lots_by(
         ],
     )->fetch_all(MYSQLI_ASSOC);
 
-    $total = (int)execute_query(
-        $conn,
-        <<<SQL
-        SELECT COUNT(*) as total
-        FROM lots l
-                 JOIN categories c on c.id = l.category_id
-                 LEFT JOIN buy_orders b on l.id = b.lot_id
-        WHERE MATCH (l.name, l.description) AGAINST (?)
-        SQL,
-        [$search_query],
-    )->fetch_row()[0];
+    $total = $result[0]['total'] ?? 0;
 
     $links = calculate_pager_state(
         $page_limit,
