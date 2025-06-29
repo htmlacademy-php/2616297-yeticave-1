@@ -229,3 +229,28 @@ function add_new_bid(mysqli $conn, int $lot_id, int $bid_price, int $user_id): v
         exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
     }
 }
+
+function get_user_bids(mysqli $conn, int $user_id): array
+{
+    return execute_query(
+        $conn,
+        <<<SQL
+        SELECT l.id,
+               MAX(b.buy_price) AS current_price,
+               l.name,
+               c.name AS category_name,
+               l.description,
+               l.img_url,
+               b.created_at,
+               l.end_date,
+               b.user_id = l.winner_id AS is_winner
+        FROM buy_orders b
+        JOIN lots l on l.id = b.lot_id
+        JOIN categories c on c.id = l.category_id
+        WHERE b.user_id = ?
+        GROUP BY l.id, b.user_id, b.created_at
+        ORDER BY b.created_at ASC
+        SQL,
+        [$user_id],
+    )->fetch_all(MYSQLI_ASSOC);
+}
