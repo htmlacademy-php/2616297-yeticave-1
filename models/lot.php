@@ -71,11 +71,12 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
     $current_price_with_id = execute_query(
         $conn,
         <<<SQL
-        SELECT MAX(buy_price) AS current_price,
+        SELECT buy_price AS current_price,
                user_id
         FROM buy_orders
         WHERE lot_id = ?
-        GROUP BY user_id;
+        ORDER BY buy_price DESC
+        LIMIT 1;
         SQL,
         [$lot_id],
     )->fetch_assoc();
