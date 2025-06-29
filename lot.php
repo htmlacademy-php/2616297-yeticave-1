@@ -32,6 +32,12 @@ if (!empty($validation)) {
 
 $lot_id = (int)($_GET['id'] ?? 0);
 $categories_list = get_all_categories($conn);
+$categories_header = include_template(
+    'categories-header.php',
+    [
+        'categories_list' => $categories_list,
+    ],
+);
 $lot = get_lot_by_id($conn, $lot_id);
 
 if (empty($lot)) {
@@ -83,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         'lot.php',
         [
             'lot' => $lot,
-            'categories_list' => $categories_list,
+            'categories_header' => $categories_header,
             'is_authorized_to_place_bid' => $is_authorized_to_place_bid,
             'errors' => $errors ?? [],
             'form_data' => $_POST,
@@ -119,7 +125,7 @@ if (!empty($errors)) {
         'lot.php',
         [
             'lot' => $lot,
-            'categories_list' => $categories_list,
+            'categories_header' => $categories_header,
             'is_auth' => $is_auth,
             'errors' => $errors ?? [],
             'form_data' => $_POST,

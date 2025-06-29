@@ -3,19 +3,11 @@
 declare(strict_types=1);
 
 /**
- * @var string[] $categories_list Список категорий
+ * @var string $categories_header HTML-представление категорий в шапке
  */
 ?>
 <main>
-    <nav class="nav">
-        <ul class="nav__list container">
-            <?php foreach ($categories_list as $category): ?>
-                <li class="nav__item">
-                    <a href="all-lots.html"><?= $category['name'] ?? ''; ?></a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
+    <?= $categories_header; ?>
     <section class="rates container">
         <h2>Мои ставки</h2>
         <?php if (!empty($bids)): ?>

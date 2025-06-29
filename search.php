@@ -23,6 +23,12 @@ $validation = validate(
 );
 
 $categories_list = get_all_categories($conn);
+$categories_header = include_template(
+    'categories-header.php',
+    [
+        'categories_list' => $categories_list,
+    ],
+);
 
 if (!empty($validation)) {
     http_response_code(400);
@@ -32,7 +38,7 @@ if (!empty($validation)) {
         [
             'search_query' => $search_query,
             'lots_list' => $lots,
-            'categories_list' => $categories_list,
+            'categories_header' => $categories_header,
             'is_auth' => $is_auth,
         ],
     );

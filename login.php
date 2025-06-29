@@ -19,6 +19,12 @@ $page_title = 'Войти';
 $user_name = get_user_name();
 
 $categories_list = get_all_categories($conn);
+$categories_header = include_template(
+    'categories-header.php',
+    [
+        'categories_list' => $categories_list,
+    ],
+);
 
 $errors = [];
 
@@ -26,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $page_content = include_template(
         'login.php',
         [
-            'categories_list' => $categories_list,
+            'categories_header' => $categories_header,
             'errors' => $errors,
             'form_data' => $_POST,
         ],

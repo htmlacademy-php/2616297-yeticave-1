@@ -46,11 +46,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $categories_list = get_all_categories($conn);
+$categories_header = include_template(
+    'categories-header.php',
+    [
+        'categories_list' => $categories_list,
+    ],
+);
 
 $page_content = include_template(
     'sign-up.php',
     [
-        'categories_list' => $categories_list,
+        'categories_header' => $categories_header,
         'errors' => $errors ?? [],
         'form_data' => $_POST,
     ],

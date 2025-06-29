@@ -12,20 +12,12 @@ declare(strict_types=1);
  *     betting_step: int,
  *     category_id: int|null
  * } $lot Массив с информацией о конкретном лоте
- * @var string[] $categories_list Список категорий
- * @var bool $is_authorized_to_place_bid Флаг проверки что текущий пользователь может сделать ставку
+ * @var string $categories_header HTML-представление категорий в шапке
+ * @var bool $is_authorized_to_place_bid Флаг проверки, что текущий пользователь может сделать ставку
  */
 ?>
 <main>
-    <nav class="nav">
-        <ul class="nav__list container">
-            <?php foreach ($categories_list as $category): ?>
-                <li class="nav__item">
-                    <a href="all-lots.html"><?= $category['name'] ?? ''; ?></a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
+    <?= $categories_header; ?>
     <section class="lot-item container">
         <h2><?= $lot['name'] ?? ''; ?></h2>
         <div class="lot-item__content">

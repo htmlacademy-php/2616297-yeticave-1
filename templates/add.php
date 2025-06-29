@@ -3,21 +3,13 @@
 declare(strict_types=1);
 
 /**
- * @var string[] $categories_list Список категорий
+ * @var string $categories_header HTML-представление категорий в шапке
  * @var array<string, string[]> $errors Ассоциативный массив ошибок валидации
  * @var array<string, mixed> $form_data Массив заполненных данных формы
  */
 ?>
 <main>
-    <nav class="nav">
-        <ul class="nav__list container">
-            <?php foreach ($categories_list as $category): ?>
-                <li class="nav__item">
-                    <a href="all-lots.html"><?= htmlspecialchars($category['name'] ?? ''); ?></a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
+    <?= $categories_header; ?>
     <?php $has_errors = !empty($errors); ?>
     <form
         class="form form--add-lot container <?= $has_errors ? 'form--invalid' : ''; ?>"

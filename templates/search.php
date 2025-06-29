@@ -3,22 +3,14 @@
 declare(strict_types=1);
 
 /**
- * @var string[] $categories_list Список категорий
+ * @var string $categories_header HTML-представление категорий в шапке
  * @var bool $is_auth Флаг авторизации
  * @var string $lots Список лотов в HTML представлении
  * @var string $search_query Строка запроса
  */
 ?>
 <main>
-    <nav class="nav">
-        <ul class="nav__list container">
-            <?php foreach ($categories_list as $category): ?>
-                <li class="nav__item">
-                    <a href="all-lots.html"><?= $category['name'] ?? ''; ?></a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
+    <?= $categories_header; ?>
     <div class="container">
         <section class="lots">
             <h2>Результаты поиска по запросу «<span><?= $search_query; ?></span>»</h2>

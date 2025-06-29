@@ -18,11 +18,17 @@ if ($is_auth === false) {
 
 $bids = get_user_bids($conn, get_user_id());
 $categories_list = get_all_categories($conn);
+$categories_header = include_template(
+    'categories-header.php',
+    [
+        'categories_list' => $categories_list,
+    ],
+);
 
 $page_content = include_template(
     'my-bets.php',
     [
-        'categories_list' => $categories_list,
+        'categories_header' => $categories_header,
         'bids' => $bids,
     ],
 );

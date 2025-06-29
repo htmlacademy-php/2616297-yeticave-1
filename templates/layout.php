@@ -71,7 +71,7 @@ declare(strict_types=1);
     <?php endif; ?>
     <div class="main-footer__bottom container">
         <div class="main-footer__copyright">
-            <p>© <?= date('Y') ?>, YetiCave</p>
+            <p>© <?= date('Y'); ?>, YetiCave</p>
             <p>Интернет-аукцион сноубордического и горнолыжного снаряжения</p>
         </div>
         <div class="main-footer__social social">
