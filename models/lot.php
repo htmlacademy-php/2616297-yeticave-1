@@ -197,6 +197,15 @@ function find_lots_by(
     ];
 }
 
+/**
+ * Добавляет новую ставку для лота
+ *
+ * @param mysqli $conn Ресурс подключения в БД
+ * @param int $lot_id Уникальный идентификатор лота
+ * @param int $bid_price Сумма ставки
+ * @param int $user_id Уникальный идентификатор пользователя, сделавшего ставку
+ * @return void
+ */
 function add_new_bid(mysqli $conn, int $lot_id, int $bid_price, int $user_id): void
 {
     execute_query(
@@ -220,6 +229,13 @@ function add_new_bid(mysqli $conn, int $lot_id, int $bid_price, int $user_id): v
     }
 }
 
+/**
+ * Возвращает ставки определённого пользователя
+ *
+ * @param mysqli $conn Ресурс подключения в БД
+ * @param int $user_id Уникальный идентификатор пользователя
+ * @return array Ассоциативный массив ставок пользователя
+ */
 function get_user_bids(mysqli $conn, int $user_id): array
 {
     return execute_query(

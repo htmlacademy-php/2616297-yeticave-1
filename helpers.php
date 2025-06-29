@@ -467,6 +467,12 @@ function change_get_parameter(array $params): string
         );
 }
 
+/**
+ * Возвращает количество времени, прошедшего с определенной даты в текстовом представлении
+ *
+ * @param string $date Дата конца временного промежутка в формате строки
+ * @return string Текстовое представление временного промежутка
+ */
 function to_time_ago_format(string $date): string
 {
     $dt_range = get_passed_time($date);
