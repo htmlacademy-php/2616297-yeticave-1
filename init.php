@@ -9,9 +9,17 @@ $is_session_started = session_start();
 
 if (!$is_session_started) {
     exit_with_message(
-        'возникла техническая ошибка. Пожалуйста, попробуйте обновить страницу или зайти позже.',
+        'Возникла техническая ошибка. Пожалуйста, попробуйте обновить страницу или зайти позже.',
         500
     );
+}
+
+if (!setlocale(LC_ALL, 'ru_RU.UTF-8')) {
+    exit_with_message('Не удалось установить локаль', 500);
+}
+
+if (!date_default_timezone_set('UTC')) {
+    exit_with_message('Не удалось установить часовой пояс', 500);
 }
 
 $config = require_once './config/autoload.php';

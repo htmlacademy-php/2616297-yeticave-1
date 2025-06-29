@@ -12,20 +12,12 @@ declare(strict_types=1);
  *     betting_step: int,
  *     category_id: int|null
  * } $lot Массив с информацией о конкретном лоте
- * @var string[] $categories_list Список категорий
- * @var bool $is_auth Флаг авторизации
+ * @var string $categories_header HTML-представление категорий в шапке
+ * @var bool $is_authorized_to_place_bid Флаг проверки, что текущий пользователь может сделать ставку
  */
 ?>
 <main>
-    <nav class="nav">
-        <ul class="nav__list container">
-            <?php foreach ($categories_list as $category): ?>
-                <li class="nav__item">
-                    <a href="all-lots.html"><?= $category['name'] ?? ''; ?></a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
+    <?= $categories_header; ?>
     <section class="lot-item container">
         <h2><?= $lot['name'] ?? ''; ?></h2>
         <div class="lot-item__content">
@@ -52,23 +44,31 @@ declare(strict_types=1);
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Текущая цена</span>
-                            <span class="lot-item__cost"><?= format_price($lot['start_price'] ?? 0); ?></span>
+                            <span class="lot-item__cost"><?= format_price($lot['current_price'] ?? 0); ?></span>
                         </div>
                         <div class="lot-item__min-cost">
                             Мин. ставка <span><?= format_price($lot['betting_step'] ?? 0); ?></span>
                         </div>
                     </div>
-                    <?php if ($is_auth === true): ?>
-                    <!--
-                    <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post" autocomplete="off">
-                        <p class="lot-item__form-item form__item form__item--invalid">
+                    <?php if ($is_authorized_to_place_bid === true): ?>
+                    <form class="lot-item__form" method="post" autocomplete="off">
+                        <p
+                            class="lot-item__form-item form__item <?= isset($errors['cost']) ? 'form__item--invalid' : ''; ?>"
+                        >
                             <label for="cost">Ваша ставка</label>
-                            <input id="cost" type="text" name="cost" placeholder="12 000">
-                            <span class="form__error">Введите наименование лота</span>
+                            <input
+                                id="cost"
+                                type="text"
+                                name="cost"
+                                placeholder="<?= format_price($lot['min_bid_price'] ?? 0, ''); ?>"
+                                value="<?= htmlspecialchars($form_data['cost'] ?? ''); ?>"
+                            >
+                            <span class="form__error">
+                                <?= format_validation_errors($errors['cost'] ?? []); ?>
+                            </span>
                         </p>
                         <button type="submit" class="button">Сделать ставку</button>
                     </form>
-                    -->
                     <?php endif; ?>
                 </div>
                 <!--
