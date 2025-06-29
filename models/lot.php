@@ -247,15 +247,15 @@ function get_user_bids(mysqli $conn, int $user_id): array
                c.name AS category_name,
                l.description,
                l.img_url,
-               b.created_at,
+               MAX(b.created_at) AS last_buy_time,
                l.end_date,
                b.user_id = l.winner_id AS is_winner
         FROM buy_orders b
-        JOIN lots l on l.id = b.lot_id
-        JOIN categories c on c.id = l.category_id
+                 JOIN lots l on l.id = b.lot_id
+                 JOIN categories c on c.id = l.category_id
         WHERE b.user_id = ?
-        GROUP BY l.id, b.user_id, b.created_at
-        ORDER BY b.created_at ASC
+        GROUP BY l.id, l.name, category_name, l.description, l.img_url, l.end_date, is_winner
+        ORDER BY last_buy_time ASC
         SQL,
         [$user_id],
     )->fetch_all(MYSQLI_ASSOC);

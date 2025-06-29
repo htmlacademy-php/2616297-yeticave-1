@@ -125,6 +125,7 @@ if (!empty($errors)) {
         'lot.php',
         [
             'lot' => $lot,
+            'is_authorized_to_place_bid' => $is_authorized_to_place_bid,
             'categories_header' => $categories_header,
             'is_auth' => $is_auth,
             'errors' => $errors ?? [],

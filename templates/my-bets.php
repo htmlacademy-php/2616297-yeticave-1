@@ -14,7 +14,7 @@ declare(strict_types=1);
         <table class="rates__list">
             <?php
             foreach ($bids as $bid):
-                $time_ago = to_time_ago_format($bid['created_at']);
+                $time_ago = to_time_ago_format($bid['last_buy_time']);
                 $end_date = get_dt_range($bid['end_date']);
                 $time_left = implode(':', $end_date);
                 $user_won = $bid['is_winner'] !== null;
