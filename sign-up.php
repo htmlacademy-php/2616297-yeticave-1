@@ -10,7 +10,7 @@ require_once 'validators.php';
 
 $conn = require_once 'init.php';
 
-$is_auth = is_authorized();
+$is_auth = is_user_authorized($conn);
 
 if ($is_auth === true) {
     exit_with_message('Доступ запрещён', 403);

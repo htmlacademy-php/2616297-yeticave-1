@@ -372,16 +372,6 @@ function upload_file(
 }
 
 /**
- * Проверяет авторизацию текущего пользователя
- *
- * @return bool true/false в зависимости от того, есть ли авторизация
- */
-function is_authorized(): bool
-{
-    return isset($_SESSION['user_data']['user_id']);
-}
-
-/**
  * Возвращает id текущего пользователя
  *
  * @return int|null Id пользователя если существует, либо null

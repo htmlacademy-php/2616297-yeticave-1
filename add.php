@@ -5,11 +5,12 @@ declare(strict_types=1);
 require_once 'helpers.php';
 require_once 'models/category.php';
 require_once 'models/lot.php';
+require_once 'models/user.php';
 require_once 'validators.php';
 
 $conn = require_once 'init.php';
 
-$is_auth = is_authorized();
+$is_auth = is_user_authorized($conn);
 
 if ($is_auth === false) {
     exit_with_message('Доступ запрещён', 403);
