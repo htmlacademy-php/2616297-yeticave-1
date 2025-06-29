@@ -58,6 +58,7 @@ $categories_header = include_template(
 $page_content = include_template(
     'add.php',
     [
+        'categories_list' => $categories_list,
         'categories_header' => $categories_header,
         'errors' => $errors ?? [],
         'form_data' => $_POST,

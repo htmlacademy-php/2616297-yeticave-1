@@ -82,7 +82,7 @@ $page_content = include_template(
     [
         'search_query' => $search_query,
         'lots' => $lots_content,
-        'categories_list' => $categories_list,
+        'categories_header' => $categories_header,
         'is_auth' => $is_auth,
         'pager' => $pager_content,
     ],
