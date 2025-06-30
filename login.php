@@ -65,6 +65,7 @@ if (!empty($errors)) {
     $page_content = include_template(
         'login.php',
         [
+            'categories_header' => $categories_header,
             'categories_list' => $categories_list,
             'errors' => $errors,
             'form_data' => $_POST,
@@ -93,6 +94,7 @@ if (!empty($errors)) {
     $page_content = include_template(
         'login.php',
         [
+            'categories_header' => $categories_header,
             'categories_list' => $categories_list,
             'errors' => $errors,
             'form_data' => $_POST,

@@ -81,6 +81,16 @@ function authenticate_user(mysqli $conn, string $email, string $password): array
 {
     $user = find_user_by_email($conn, $email);
 
+    if (empty($user)) {
+        return [
+            'errors' => [
+                'email' => [
+                    'Пользователя не существует',
+                ],
+            ],
+        ];
+    }
+
     if (!password_verify($password, $user['password_hash'])) {
         return [
             'errors' => [
