@@ -261,3 +261,35 @@ function get_user_bids(mysqli $conn, int $user_id): array
         [$user_id],
     )->fetch_all(MYSQLI_ASSOC);
 }
+
+/**
+ * Находит ставки для определённого лота
+ *
+ * @param mysqli $conn Ресурс подключения в БД
+ * @param int $lot_id Уникальный идентификатор лота
+ * @return array Ассоциативный массив, где total - общее количество ставок, а bids - информация по каждой ставке
+ */
+function find_lot_bids(mysqli $conn, int $lot_id): array
+{
+    $result = execute_query(
+        $conn,
+        <<<SQL
+        SELECT u.first_name,
+               b.buy_price,
+               b.created_at,
+               COUNT(*) OVER () as total
+        FROM buy_orders b
+                 JOIN users u ON b.user_id = u.id
+        WHERE b.lot_id = ?
+        ORDER BY b.created_at DESC;
+        SQL,
+        [$lot_id],
+    )->fetch_all(MYSQLI_ASSOC);
+
+    $total = $result[0]['total'] ?? 0;
+
+    return [
+        'total' => $total,
+        'bids' => $result,
+    ];
+}

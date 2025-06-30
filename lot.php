@@ -46,6 +46,7 @@ if (empty($lot)) {
 }
 
 $page_title = $lot['name'] ?? '';
+$bids = find_lot_bids($conn, $lot_id);
 
 $is_not_expired = false;
 $lot_end_date = $lot['end_date'] ?? null;
@@ -89,6 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         'lot.php',
         [
             'lot' => $lot,
+            'bids' => $bids['bids'],
+            'bids_total' => $bids['total'],
             'categories_header' => $categories_header,
             'is_authorized_to_place_bid' => $is_authorized_to_place_bid,
             'errors' => $errors ?? [],
@@ -125,6 +128,8 @@ if (!empty($errors)) {
         'lot.php',
         [
             'lot' => $lot,
+            'bids' => $bids['bids'],
+            'bids_total' => $bids['total'],
             'is_authorized_to_place_bid' => $is_authorized_to_place_bid,
             'categories_header' => $categories_header,
             'is_auth' => $is_auth,

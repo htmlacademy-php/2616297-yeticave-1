@@ -477,6 +477,9 @@ function to_time_ago_format(string $date): string
 {
     $dt_range = get_passed_time($date);
     $date_to_format = date_create($date);
+    if ($date_to_format === false) {
+        return '';
+    }
     $yesterday_date = date_create('yesterday');
     $date_time = date_format($date_to_format, 'H:i');
     $was_yesterday = $date_to_format->format('Y-m-d') === $yesterday_date->format('Y-m-d');
