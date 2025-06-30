@@ -65,7 +65,7 @@ declare(strict_types=1);
                     </div>
                 </td>
                 <td class="rates__price">
-                    <?= format_price($bid['current_price'] ?? ''); ?>
+                    <?= format_price($bid['current_price'] ?? 0); ?>
                 </td>
                 <td class="rates__time">
                     <?= $time_ago; ?>
