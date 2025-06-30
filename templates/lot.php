@@ -19,15 +19,20 @@ declare(strict_types=1);
 <main>
     <?= $categories_header; ?>
     <section class="lot-item container">
-        <h2><?= $lot['name'] ?? ''; ?></h2>
+        <h2><?= htmlspecialchars($lot['name'] ?? ''); ?></h2>
         <div class="lot-item__content">
             <div class="lot-item__left">
                 <div class="lot-item__image">
-                    <img src="<?= $lot['img_url'] ?? ''; ?>" width="730" height="548" alt="<?= $lot['name'] ?? ''; ?>">
+                    <img
+                        src="<?= $lot['img_url'] ?? ''; ?>"
+                        width="730"
+                        height="548"
+                        alt="<?= htmlspecialchars($lot['name'] ?? ''); ?>"
+                    >
                 </div>
                 <p class="lot-item__category">Категория: <span><?= $lot['category_name'] ?? ''; ?></span></p>
                 <p class="lot-item__description">
-                    <?= $lot['description'] ?? ''; ?>
+                    <?= htmlspecialchars($lot['description'] ?? ''); ?>
                 </p>
             </div>
             <div class="lot-item__right">
