@@ -50,11 +50,18 @@ declare(strict_types=1);
                             alt="<?= htmlspecialchars($bid['name'] ?? ''); ?>"
                         >
                     </div>
-                    <h3 class="rates__title">
-                        <a href="/lot.php?id=<?= $bid['id'] ?? 0; ?>">
-                            <?= htmlspecialchars($bid['name'] ?? ''); ?>
-                        </a>
-                    </h3>
+                    <?php if ($user_won): ?>
+                    <div>
+                        <?php endif; ?>
+                        <h3 class="rates__title">
+                            <a href="/lot.php?id=<?= $bid['id'] ?? 0; ?>">
+                                <?= htmlspecialchars($bid['name'] ?? ''); ?>
+                            </a>
+                        </h3>
+                        <?php if ($user_won): ?>
+                        <p> <?= htmlspecialchars($bid['contact_info'] ?? ''); ?> </p>
+                    </div>
+                    <?php endif; ?>
                 </td>
                 <td class="rates__category">
                     <?= $bid['category_name'] ?? ''; ?>

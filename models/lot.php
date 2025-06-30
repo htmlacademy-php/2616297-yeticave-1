@@ -246,7 +246,7 @@ function get_user_bids(mysqli $conn, int $user_id): array
                MAX(b.buy_price) AS current_price,
                l.name,
                c.name AS category_name,
-               l.description,
+               u.contact_info,
                l.img_url,
                MAX(b.created_at) AS last_buy_time,
                l.end_date,
@@ -254,6 +254,7 @@ function get_user_bids(mysqli $conn, int $user_id): array
         FROM buy_orders b
                  JOIN lots l on l.id = b.lot_id
                  JOIN categories c on c.id = l.category_id
+                 JOIN users u on l.user_id = u.id
         WHERE b.user_id = ?
         GROUP BY l.id, l.name, category_name, l.description, l.img_url, l.end_date, is_winner
         ORDER BY last_buy_time ASC
