@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-require_once 'helpers.php';
+$conn = require_once 'init.php';
+
 require_once 'models/category.php';
 require_once 'models/lot.php';
 require_once 'models/user.php';
 require_once 'validators.php';
 
-$conn = require_once 'init.php';
-
-$is_auth = is_authorized();
+$is_auth = is_user_authorized($conn);
 
 if ($is_auth === true) {
     exit_with_message('Доступ запрещён', 403);
@@ -20,6 +19,12 @@ $page_title = 'Войти';
 $user_name = get_user_name();
 
 $categories_list = get_all_categories($conn);
+$categories_header = include_template(
+    'categories-header.php',
+    [
+        'categories_list' => $categories_list,
+    ],
+);
 
 $errors = [];
 
@@ -27,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $page_content = include_template(
         'login.php',
         [
-            'categories_list' => $categories_list,
+            'categories_header' => $categories_header,
             'errors' => $errors,
             'form_data' => $_POST,
         ],
@@ -60,6 +65,7 @@ if (!empty($errors)) {
     $page_content = include_template(
         'login.php',
         [
+            'categories_header' => $categories_header,
             'categories_list' => $categories_list,
             'errors' => $errors,
             'form_data' => $_POST,
@@ -88,6 +94,7 @@ if (!empty($errors)) {
     $page_content = include_template(
         'login.php',
         [
+            'categories_header' => $categories_header,
             'categories_list' => $categories_list,
             'errors' => $errors,
             'form_data' => $_POST,

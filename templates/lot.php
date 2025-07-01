@@ -12,30 +12,29 @@ declare(strict_types=1);
  *     betting_step: int,
  *     category_id: int|null
  * } $lot Массив с информацией о конкретном лоте
- * @var string[] $categories_list Список категорий
- * @var bool $is_auth Флаг авторизации
+ * @var string $categories_header HTML-представление категорий в шапке
+ * @var array $bids Массив с информацией о ставках для лота
+ * @var int $bids_total Количество ставок для лота
+ * @var bool $is_authorized_to_place_bid Флаг проверки, что текущий пользователь может сделать ставку
  */
 ?>
 <main>
-    <nav class="nav">
-        <ul class="nav__list container">
-            <?php foreach ($categories_list as $category): ?>
-                <li class="nav__item">
-                    <a href="all-lots.html"><?= $category['name'] ?? ''; ?></a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </nav>
+    <?= $categories_header; ?>
     <section class="lot-item container">
-        <h2><?= $lot['name'] ?? ''; ?></h2>
+        <h2><?= htmlspecialchars($lot['name'] ?? ''); ?></h2>
         <div class="lot-item__content">
             <div class="lot-item__left">
                 <div class="lot-item__image">
-                    <img src="<?= $lot['img_url'] ?? ''; ?>" width="730" height="548" alt="<?= $lot['name'] ?? ''; ?>">
+                    <img
+                        src="<?= $lot['img_url'] ?? ''; ?>"
+                        width="730"
+                        height="548"
+                        alt="<?= htmlspecialchars($lot['name'] ?? ''); ?>"
+                    >
                 </div>
                 <p class="lot-item__category">Категория: <span><?= $lot['category_name'] ?? ''; ?></span></p>
                 <p class="lot-item__description">
-                    <?= $lot['description'] ?? ''; ?>
+                    <?= htmlspecialchars($lot['description'] ?? ''); ?>
                 </p>
             </div>
             <div class="lot-item__right">
@@ -52,82 +51,47 @@ declare(strict_types=1);
                     <div class="lot-item__cost-state">
                         <div class="lot-item__rate">
                             <span class="lot-item__amount">Текущая цена</span>
-                            <span class="lot-item__cost"><?= format_price($lot['start_price'] ?? 0); ?></span>
+                            <span class="lot-item__cost"><?= format_price($lot['current_price'] ?? 0); ?></span>
                         </div>
                         <div class="lot-item__min-cost">
                             Мин. ставка <span><?= format_price($lot['betting_step'] ?? 0); ?></span>
                         </div>
                     </div>
-                    <?php if ($is_auth === true): ?>
-                    <!--
-                    <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post" autocomplete="off">
-                        <p class="lot-item__form-item form__item form__item--invalid">
+                    <?php if ($is_authorized_to_place_bid === true): ?>
+                    <form class="lot-item__form" method="post" autocomplete="off">
+                        <p
+                            class="lot-item__form-item form__item <?= isset($errors['cost']) ? 'form__item--invalid' : ''; ?>"
+                        >
                             <label for="cost">Ваша ставка</label>
-                            <input id="cost" type="text" name="cost" placeholder="12 000">
-                            <span class="form__error">Введите наименование лота</span>
+                            <input
+                                id="cost"
+                                type="text"
+                                name="cost"
+                                placeholder="<?= format_price($lot['min_bid_price'] ?? 0, ''); ?>"
+                                value="<?= htmlspecialchars($form_data['cost'] ?? ''); ?>"
+                            >
+                            <span class="form__error">
+                                <?= format_validation_errors($errors['cost'] ?? []); ?>
+                            </span>
                         </p>
                         <button type="submit" class="button">Сделать ставку</button>
                     </form>
-                    -->
                     <?php endif; ?>
                 </div>
-                <!--
                 <div class="history">
-                    <h3>История ставок (<span>10</span>)</h3>
+                    <h3>История ставок (<span><?= $bids_total; ?></span>)</h3>
+                    <?php if (!empty($bids)): ?>
                     <table class="history__list">
+                        <?php foreach ($bids as $bid): ?>
                         <tr class="history__item">
-                            <td class="history__name">Иван</td>
-                            <td class="history__price">10 999 р</td>
-                            <td class="history__time">5 минут назад</td>
+                            <td class="history__name"><?= htmlspecialchars($bid['first_name'] ?? '') ?></td>
+                            <td class="history__price"><?= format_price($bid['buy_price'] ?? 0); ?></td>
+                            <td class="history__time"><?= to_time_ago_format($bid['created_at'] ?? ''); ?></td>
                         </tr>
-                        <tr class="history__item">
-                            <td class="history__name">Константин</td>
-                            <td class="history__price">10 999 р</td>
-                            <td class="history__time">20 минут назад</td>
-                        </tr>
-                        <tr class="history__item">
-                            <td class="history__name">Евгений</td>
-                            <td class="history__price">10 999 р</td>
-                            <td class="history__time">Час назад</td>
-                        </tr>
-                        <tr class="history__item">
-                            <td class="history__name">Игорь</td>
-                            <td class="history__price">10 999 р</td>
-                            <td class="history__time">19.03.17 в 08:21</td>
-                        </tr>
-                        <tr class="history__item">
-                            <td class="history__name">Енакентий</td>
-                            <td class="history__price">10 999 р</td>
-                            <td class="history__time">19.03.17 в 13:20</td>
-                        </tr>
-                        <tr class="history__item">
-                            <td class="history__name">Семён</td>
-                            <td class="history__price">10 999 р</td>
-                            <td class="history__time">19.03.17 в 12:20</td>
-                        </tr>
-                        <tr class="history__item">
-                            <td class="history__name">Илья</td>
-                            <td class="history__price">10 999 р</td>
-                            <td class="history__time">19.03.17 в 10:20</td>
-                        </tr>
-                        <tr class="history__item">
-                            <td class="history__name">Енакентий</td>
-                            <td class="history__price">10 999 р</td>
-                            <td class="history__time">19.03.17 в 13:20</td>
-                        </tr>
-                        <tr class="history__item">
-                            <td class="history__name">Семён</td>
-                            <td class="history__price">10 999 р</td>
-                            <td class="history__time">19.03.17 в 12:20</td>
-                        </tr>
-                        <tr class="history__item">
-                            <td class="history__name">Илья</td>
-                            <td class="history__price">10 999 р</td>
-                            <td class="history__time">19.03.17 в 10:20</td>
-                        </tr>
+                        <?php endforeach; ?>
                     </table>
+                    <?php endif; ?>
                 </div>
-                -->
             </div>
         </div>
     </section>

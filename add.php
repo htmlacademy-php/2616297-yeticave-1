@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-require_once 'helpers.php';
-require_once 'models/category.php';
-require_once 'models/lot.php';
-require_once 'validators.php';
-
 $conn = require_once 'init.php';
 
-$is_auth = is_authorized();
+require_once 'models/category.php';
+require_once 'models/lot.php';
+require_once 'models/user.php';
+require_once 'validators.php';
+
+$is_auth = is_user_authorized($conn);
 
 if ($is_auth === false) {
     exit_with_message('Доступ запрещён', 403);
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn,
             $_POST,
             $_FILES['lot-img'],
-            (int)$_SESSION['user_id'],
+            get_user_id(),
         );
 
         header("Location: lot.php?id=$lot_id");
@@ -48,11 +48,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $categories_list = get_all_categories($conn);
+$categories_header = include_template(
+    'categories-header.php',
+    [
+        'categories_list' => $categories_list,
+    ],
+);
 
 $page_content = include_template(
     'add.php',
     [
         'categories_list' => $categories_list,
+        'categories_header' => $categories_header,
         'errors' => $errors ?? [],
         'form_data' => $_POST,
     ],

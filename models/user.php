@@ -81,6 +81,16 @@ function authenticate_user(mysqli $conn, string $email, string $password): array
 {
     $user = find_user_by_email($conn, $email);
 
+    if (empty($user)) {
+        return [
+            'errors' => [
+                'email' => [
+                    'Пользователя не существует',
+                ],
+            ],
+        ];
+    }
+
     if (!password_verify($password, $user['password_hash'])) {
         return [
             'errors' => [
@@ -97,6 +107,42 @@ function authenticate_user(mysqli $conn, string $email, string $password): array
             'user_id' => $user['id'],
             'email' => $user['email'],
             'name' => $user['first_name'],
+            'hash' => $user['password_hash'],
         ]
     ];
+}
+
+/**
+ * Проверяет авторизацию текущего пользователя
+ *
+ * @param mysqli $conn Ресурс подключения к БД
+ * @return bool true/false в зависимости от того, есть ли авторизация
+ */
+function is_user_authorized(mysqli $conn): bool
+{
+    $user_login = $_SESSION['user_data']['email'] ?? null;
+    $user_session_hash = $_SESSION['user_data']['hash'] ?? null;
+
+    if (
+        $user_login === null
+        || $user_session_hash === null
+    ) {
+        return false;
+    }
+
+    $user_data = find_user_by_email($conn, $user_login);
+
+    if (empty($user_data)) {
+        unset($_SESSION['user_data']);
+        return false;
+    }
+
+    $user_db_hash = $user_data['password_hash'] ?? null;
+
+    if ($user_session_hash !== $user_db_hash) {
+        unset($_SESSION['user_data']);
+        return false;
+    }
+
+    return true;
 }
