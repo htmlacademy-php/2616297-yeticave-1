@@ -294,3 +294,49 @@ function find_lot_bids(mysqli $conn, int $lot_id): array
         'bids' => $result,
     ];
 }
+
+/**
+ * Делает запрос на выбор победителя лотов, у которых закончился срок размещения
+ *
+ * @param mysqli $conn Ресурс подключения к БД
+ * @return void
+ */
+function assign_winners(mysqli $conn): void
+{
+    execute_query(
+        $conn,
+        <<<SQL
+        UPDATE lots l
+            JOIN (SELECT l.id,
+                         u.id              AS user_id,
+                         MAX(bo.buy_price) AS sold_price
+                  FROM lots l
+                           JOIN buy_orders bo ON l.id = bo.lot_id
+                           JOIN users u ON u.id = bo.user_id
+                  WHERE l.end_date < NOW()
+                    AND winner_id IS NULL
+                  GROUP by l.id, u.id) AS winners ON l.id = winners.id
+        SET l.winner_id = winners.user_id
+        WHERE l.end_date < NOW()
+          AND l.winner_id IS NULL;
+        SQL,
+    );
+}
+
+function find_users_with_pending_email(mysqli $conn): array
+{
+    return execute_query(
+        $conn,
+        <<<SQL
+        SELECT
+            l.id,
+            l.name,
+            u.first_name,
+            u.email
+        FROM lots l
+        JOIN users u ON l.user_id = u.id
+        WHERE winner_id IS NOT NULL
+          AND win_email_sent = FALSE;
+        SQL,
+    )->fetch_all(MYSQLI_ASSOC);
+}
