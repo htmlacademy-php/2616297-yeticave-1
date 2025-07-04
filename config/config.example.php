@@ -10,4 +10,10 @@ return [
         'name' => 'yeticave',
         'port' => 3306,
     ],
+    'smtp' => [
+        'host' => 'localhost',
+        'username' => 'your_username',
+        'port' => 465,
+        'password' => 'your_password',
+    ],
 ];
