@@ -1,0 +1,7 @@
+{
+    "name": "xvlvv/yeticave",
+    "type": "project",
+    "require": {
+        "symfony/mailer": "5.0.0"
+    }
+}
