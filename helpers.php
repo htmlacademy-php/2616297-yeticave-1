@@ -497,6 +497,22 @@ function to_time_ago_format(string $date): string
     };
 }
 
+/**
+ * Отправляет email
+ *
+ * @param array{
+ *       user: string,
+ *       pass: string,
+ *       host: string,
+ *       port: int,
+ * } $mail_settings Ассоциативный массив с данными для отправки по SMTP
+ * @param string $to Почта, с которой отправляется email
+ * @param string $subject Почта, куда отправляется email
+ * @param string $body Тело email
+ * @param string $content_type Значение заголовка Content-Type
+ * @return int Возвращает константу EMAIL_DELIVERY_SUCCESS или EMAIL_DELIVERY_FAILURE,
+ *             в зависимости от результата отправки
+ */
 function send_email(
     array $mail_settings,
     string $to,

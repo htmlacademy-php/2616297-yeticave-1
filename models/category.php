@@ -44,6 +44,13 @@ function get_category_by_slug(mysqli $conn, string $slug): array
     return array_merge(...array_values($result));
 }
 
+/**
+ * Возвращает название категории по её уникальному идентификатору
+ *
+ * @param mysqli $conn Ресурс подключения к БД
+ * @param int $category_id Уникальный идентификатор категории
+ * @return string|null Название категории либо null если категория не найдена
+ */
 function get_category_name_by_id(mysqli $conn, int $category_id): ?string
 {
     $result = execute_query(

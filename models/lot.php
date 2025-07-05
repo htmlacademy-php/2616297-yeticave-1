@@ -323,6 +323,17 @@ function assign_winners(mysqli $conn): void
     );
 }
 
+/**
+ * Возвращает пользователей-победителей, которым не был отправлен email, либо был отправлен с ошибкой
+ *
+ * @param mysqli $conn Ресурс подключения к БД
+ * @return array{
+ *     id: int,
+ *     name: string,
+ *     first_name: string,
+ *     email: string
+ * } Ассоциативный массив пользователей
+ */
 function find_users_with_pending_email(mysqli $conn): array
 {
     return execute_query(
@@ -341,6 +352,18 @@ function find_users_with_pending_email(mysqli $conn): array
     )->fetch_all(MYSQLI_ASSOC);
 }
 
+/**
+ * Находит лоты по определённой категории
+ *
+ * @param mysqli $conn Ресурс подключения к БД
+ * @param int $category_id Уникальный идентификатор категории
+ * @param int $page_limit Лимит количества лотов на одной странице
+ * @param int $current_page Номер текущей страницы
+ * @return array{
+ *     lots: array,
+ *     pager_content: array
+ * } Ассоциативный массив, где lots - список лотов, pager_content - информация для постраничной навигации
+ */
 function find_lots_by_category(
     mysqli $conn,
     int $category_id,
