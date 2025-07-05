@@ -12,13 +12,16 @@ declare(strict_types=1);
         <h2 class="promo__title">Нужен стафф для катки?</h2>
         <p class="promo__text">На нашем интернет-аукционе ты найдёшь самое эксклюзивное сноубордическое и горнолыжное снаряжение.</p>
         <ul class="promo__list">
-            <?php foreach ($categories_list as $category): ?>
-                <li class="promo__item <?= isset($category['slug']) ? "promo__item--{$category['slug']}" : '' ?>">
+            <?php foreach ($categories_list as $category):
+            $slug = htmlspecialchars($category['slug'] ?? '');
+            $slug_class = !empty($slug) ? "promo__item--{$slug}" : '';
+            ?>
+                <li class="promo__item <?= $slug_class; ?>">
                     <a
                         class="promo__link"
-                        href="/category.php?id=<?= $category['id'] ?? 0 ?>"
+                        href="/category.php?id=<?= $category['id'] ?? 0; ?>"
                     >
-                        <?= $category['name'] ?? '' ?>
+                        <?= htmlspecialchars($category['name'] ?? ''); ?>
                     </a>
                 </li>
             <?php endforeach; ?>
