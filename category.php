@@ -101,4 +101,4 @@ $html_result = include_template(
     ],
 );
 
-print_r($html_result);
+print($html_result);
