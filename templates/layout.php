@@ -68,7 +68,7 @@ declare(strict_types=1);
             <ul class="nav__list container">
                 <?php foreach ($categories_list as $category): ?>
                     <li class="nav__item">
-                        <a href="pages/all-lots.html"><?= $category['name'] ?? ''; ?></a>
+                        <a href="/category.php?id=<?= $category['id'] ?? 0 ?>"><?= $category['name'] ?? ''; ?></a>
                     </li>
                 <?php endforeach; ?>
             </ul>

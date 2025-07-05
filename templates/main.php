@@ -14,7 +14,12 @@ declare(strict_types=1);
         <ul class="promo__list">
             <?php foreach ($categories_list as $category): ?>
                 <li class="promo__item <?= isset($category['slug']) ? "promo__item--{$category['slug']}" : '' ?>">
-                    <a class="promo__link" href="pages/all-lots.html"><?= $category['name'] ?? '' ?></a>
+                    <a
+                        class="promo__link"
+                        href="/category.php?id=<?= $category['id'] ?? 0 ?>"
+                    >
+                        <?= $category['name'] ?? '' ?>
+                    </a>
                 </li>
             <?php endforeach; ?>
         </ul>

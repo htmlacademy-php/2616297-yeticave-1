@@ -340,3 +340,49 @@ function find_users_with_pending_email(mysqli $conn): array
         SQL,
     )->fetch_all(MYSQLI_ASSOC);
 }
+
+function find_lots_by_category(
+    mysqli $conn,
+    int $category_id,
+    int $page_limit = 9,
+    int $current_page = 1,
+): array {
+    $offset = get_current_page_offset($page_limit, $current_page);
+
+    $result = execute_query(
+        $conn,
+        <<<SQL
+        SELECT l.id,
+               l.name,
+               l.start_price,
+               l.img_url,
+               l.end_date,
+               c.name           AS category_name,
+               COUNT(*) OVER() as total
+        FROM lots l
+                 JOIN categories c on c.id = l.category_id
+        WHERE l.category_id = ?
+        GROUP BY l.id, l.created_at
+        LIMIT ?
+        OFFSET ?
+        SQL,
+        [
+            $category_id,
+            $page_limit,
+            $offset,
+        ],
+    )->fetch_all(MYSQLI_ASSOC);
+
+    $total = $result[0]['total'] ?? 0;
+
+    $links = calculate_pager_state(
+        $page_limit,
+        $current_page,
+        $total,
+    );
+
+    return [
+        'lots' => $result,
+        'pager_content' => $links,
+    ];
+}

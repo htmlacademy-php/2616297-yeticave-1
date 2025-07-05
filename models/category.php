@@ -15,7 +15,7 @@ function get_all_categories(mysqli $conn): array
     return execute_query(
         $conn,
         <<<SQL
-        SELECT name, slug
+        SELECT id, name, slug
         FROM categories
         LIMIT 20
         SQL
@@ -42,4 +42,19 @@ function get_category_by_slug(mysqli $conn, string $slug): array
     )->fetch_all(MYSQLI_ASSOC);
 
     return array_merge(...array_values($result));
+}
+
+function get_category_name_by_id(mysqli $conn, int $category_id): ?string
+{
+    $result = execute_query(
+        $conn,
+        <<<SQL
+        SELECT name
+        FROM categories
+        WHERE id = ?
+        SQL,
+        [$category_id],
+    );
+
+    return $result->fetch_row()[0] ?? null;
 }
