@@ -16,4 +16,7 @@ return [
         'port' => 465,
         'password' => 'your_password',
     ],
+    'app' => [
+        'url' => 'http://localhost',
+    ]
 ];
