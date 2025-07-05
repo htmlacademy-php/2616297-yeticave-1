@@ -64,7 +64,7 @@ declare(strict_types=1);
                     <?php endif; ?>
                 </td>
                 <td class="rates__category">
-                    <?= $bid['category_name'] ?? ''; ?>
+                    <?= htmlspecialchars($bid['category_name'] ?? ''); ?>
                 </td>
                 <td class="rates__timer">
                     <div class="timer <?= $timer_modifier; ?>">

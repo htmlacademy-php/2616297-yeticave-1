@@ -5,24 +5,34 @@ declare(strict_types=1);
 $conn = require_once 'init.php';
 
 require_once 'models/category.php';
-require_once 'models/lot.php';
 require_once 'models/user.php';
+require_once 'models/lot.php';
 require_once 'validators.php';
 
 $is_auth = is_user_authorized($conn);
 $user_name = get_user_name();
-$lots = [];
-$search_query = '';
+$errors = [];
 
 $validation = validate(
     $_GET,
     [
-        'search' => ['required'],
-        'page' => ['valid_integer'],
+        'id' => ['required', 'valid_integer', greater_than(0)],
     ],
 );
 
+if (!empty($validation)) {
+    $error_msg = '';
+
+    foreach ($validation as $key => $value) {
+        $error_msg .= "Значение $key содержит ошибки: " . implode(', ', $value) . '<br>';
+    }
+
+    exit_with_message($error_msg, 400);
+}
+
+$category_id = (int)($_GET['id'] ?? 0);
 $categories_list = get_all_categories($conn);
+
 $categories_header = include_template(
     'categories-header.php',
     [
@@ -30,16 +40,15 @@ $categories_header = include_template(
     ],
 );
 
-if (!empty($validation)) {
-    http_response_code(400);
+$category_name = get_category_name_by_id($conn, $category_id);
 
+if ($category_name === null) {
+    $page_title = '404 Страница не найдена';
+    http_response_code(404);
     $page_content = include_template(
-        'search.php',
+        '404.php',
         [
-            'search_query' => $search_query,
-            'lots_list' => $lots,
             'categories_header' => $categories_header,
-            'is_auth' => $is_auth,
         ],
     );
 
@@ -47,7 +56,7 @@ if (!empty($validation)) {
         'layout.php',
         [
             'categories_list' => $categories_list,
-            'page_title' => 'Ничего не найдено по вашему запросу',
+            'page_title' => $page_title,
             'is_auth' => $is_auth,
             'user_name' => $user_name,
             'page_content' => $page_content,
@@ -58,42 +67,34 @@ if (!empty($validation)) {
     die();
 }
 
-$search_query = htmlspecialchars(trim($_GET['search']));
-$page_title = "Результаты поиска по запросу «{$search_query}»";
 $page_limit = 9;
 $current_page = (int)($_GET['page'] ?? 1);
-$page_data = find_lots_by($conn, $search_query, $page_limit, $current_page);
-$lots = $page_data['lots'];
-$pager_content = $page_data['pager_content'];
-
-if (empty($lots)) {
-    http_response_code(404);
-}
+$lots = find_lots_by_category($conn, $category_id, $page_limit, $current_page);
+$page_heading = "Все лоты в категории  «{$category_name}»";
 
 $lots_content = include_template(
     'lots.php',
     [
-        'lots_list' => $lots,
+        'lots_list' => $lots['lots'],
     ],
 );
 
 $page_content = include_template(
-    'search.php',
+    'category.php',
     [
-        'search_query' => $search_query,
+        'heading' => $page_heading,
         'lots' => $lots_content,
         'categories_header' => $categories_header,
         'is_auth' => $is_auth,
-        'pager' => $pager_content,
+        'pager' => $lots['pager_content'],
     ],
 );
 
 $html_result = include_template(
     'layout.php',
     [
-        'search_query' => $search_query,
         'categories_list' => $categories_list,
-        'page_title' => $page_title,
+        'page_title' => $page_heading,
         'is_auth' => $is_auth,
         'user_name' => $user_name,
         'page_content' => $page_content,
