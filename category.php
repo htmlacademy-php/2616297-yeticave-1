@@ -40,9 +40,37 @@ $categories_header = include_template(
     ],
 );
 
-$lots = find_lots_by_category($conn, $category_id);
 $category_name = get_category_name_by_id($conn, $category_id);
-$page_heading = is_null($category_name) ? 'Категория не найдена' : "Все лоты в категории  «{$category_name}»";
+
+if ($category_name === null) {
+    $page_title = '404 Страница не найдена';
+    http_response_code(404);
+    $page_content = include_template(
+        '404.php',
+        [
+            'categories_header' => $categories_header,
+        ],
+    );
+
+    $html_result = include_template(
+        'layout.php',
+        [
+            'categories_list' => $categories_list,
+            'page_title' => $page_title,
+            'is_auth' => $is_auth,
+            'user_name' => $user_name,
+            'page_content' => $page_content,
+        ],
+    );
+
+    print($html_result);
+    die();
+}
+
+$page_limit = 9;
+$current_page = (int)($_GET['page'] ?? 1);
+$lots = find_lots_by_category($conn, $category_id, $page_limit, $current_page);
+$page_heading = "Все лоты в категории  «{$category_name}»";
 
 $lots_content = include_template(
     'lots.php',
