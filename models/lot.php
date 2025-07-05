@@ -88,8 +88,7 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
         $lot['current_bid_user'] = $current_price_with_id['user_id'];
     }
 
-    $min_betting_step = 1;
-    $min_bid_price = $lot['current_price'] + $lot['betting_step'] + $min_betting_step;
+    $min_bid_price = $lot['current_price'] + $lot['betting_step'];
 
     $lot['min_bid_price'] = $min_bid_price;
 
@@ -111,7 +110,7 @@ function add_lot(mysqli $conn, array $fields, array $img_file, int $user_id): in
     $file_upload = upload_file($img_file['name'], $img_file['tmp_name'], 'img-');
 
     if (($file_upload['status'] ?? false) === false) {
-        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
+        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.');
     }
 
     $lot_data = [
@@ -137,7 +136,7 @@ function add_lot(mysqli $conn, array $fields, array $img_file, int $user_id): in
     $new_lot_id = mysqli_insert_id($conn);
 
     if ($new_lot_id === 0) {
-        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
+        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.');
     }
 
     return $new_lot_id;
@@ -226,7 +225,7 @@ function add_new_bid(mysqli $conn, int $lot_id, int $bid_price, int $user_id): v
     $is_bid_added = $new_bid_id !== 0;
 
     if (!$is_bid_added) {
-        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
+        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.');
     }
 }
 
@@ -257,7 +256,7 @@ function get_user_bids(mysqli $conn, int $user_id): array
                  JOIN users u on l.user_id = u.id
         WHERE b.user_id = ?
         GROUP BY l.id, l.name, category_name, l.description, l.img_url, l.end_date, is_winner
-        ORDER BY last_buy_time ASC
+        ORDER BY last_buy_time
         SQL,
         [$user_id],
     )->fetch_all(MYSQLI_ASSOC);
@@ -307,15 +306,16 @@ function assign_winners(mysqli $conn): void
         $conn,
         <<<SQL
         UPDATE lots l
-            JOIN (SELECT l.id,
-                         u.id              AS user_id,
-                         MAX(bo.buy_price) AS sold_price
-                  FROM lots l
-                           JOIN buy_orders bo ON l.id = bo.lot_id
-                           JOIN users u ON u.id = bo.user_id
-                  WHERE l.end_date < NOW()
-                    AND winner_id IS NULL
-                  GROUP by l.id, u.id) AS winners ON l.id = winners.id
+            JOIN (SELECT lot_id,
+                         user_id
+                  FROM (SELECT bo.lot_id,
+                               bo.user_id,
+                               ROW_NUMBER() OVER (PARTITION BY bo.lot_id ORDER BY bo.buy_price DESC, bo.created_at DESC) as rn
+                        FROM buy_orders bo
+                                 JOIN lots l ON bo.lot_id = l.id
+                        WHERE l.end_date < NOW()
+                          AND l.winner_id IS NULL) AS ranked_bids
+                  WHERE rn = 1) AS winners ON l.id = winners.lot_id
         SET l.winner_id = winners.user_id
         WHERE l.end_date < NOW()
           AND l.winner_id IS NULL;
@@ -334,7 +334,7 @@ function find_users_with_pending_email(mysqli $conn): array
             u.first_name,
             u.email
         FROM lots l
-        JOIN users u ON l.user_id = u.id
+        JOIN users u ON l.winner_id = u.id
         WHERE winner_id IS NOT NULL
           AND win_email_sent = FALSE;
         SQL,

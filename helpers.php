@@ -2,6 +2,11 @@
 
 require_once 'constants.php';
 
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+
 /**
  * Проверяет переданную дату на соответствие формату 'ГГГГ-ММ-ДД'
  *
@@ -477,9 +482,11 @@ function to_time_ago_format(string $date): string
 {
     $dt_range = get_passed_time($date);
     $date_to_format = date_create($date);
+
     if ($date_to_format === false) {
         return '';
     }
+
     $yesterday_date = date_create('yesterday');
     $date_time = date_format($date_to_format, 'H:i');
     $was_yesterday = $date_to_format->format('Y-m-d') === $yesterday_date->format('Y-m-d');
@@ -501,4 +508,38 @@ function to_time_ago_format(string $date): string
         $was_yesterday => "Вчера, в $date_time",
         default => date_format($date_to_format, 'd.m.y в H:i'),
     };
+}
+
+function send_email(
+    array $mail_settings,
+    string $to,
+    string $subject,
+    string $body,
+    string $content_type
+): bool {
+    $user = $mail_settings['user'];
+    $dsn_string = sprintf(
+        'smtp://%s:%s@%s:%s',
+        urlencode($user),
+        urlencode($mail_settings['pass']),
+        $mail_settings['host'],
+        $mail_settings['port']
+    );
+    $transport = Transport::fromDsn($dsn_string);
+    $mailer = new Mailer($transport);
+
+    $email = (new Email())
+        ->from($user)
+        ->to($to)
+        ->subject($subject)
+        ->html($body);
+
+    $email->getHeaders()->addTextHeader('Content-Type', $content_type);
+
+    try {
+        $mailer->send($email);
+        return EMAIL_DELIVERY_SUCCESS;
+    } catch (TransportExceptionInterface $e) {
+        return EMAIL_DELIVERY_FAILURE;
+    }
 }
