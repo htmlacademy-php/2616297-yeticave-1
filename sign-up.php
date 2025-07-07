@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         [
             'email' => ['required', 'valid_email', unique_email($conn)],
             'password' => ['required'],
-            'name' => ['required', character_limit(129)],
+            'name' => ['required', character_limit(128)],
             'message' => ['required', character_limit(256)],
         ],
     );

@@ -88,8 +88,7 @@ function get_lot_by_id(mysqli $conn, int $lot_id): array
         $lot['current_bid_user'] = $current_price_with_id['user_id'];
     }
 
-    $min_betting_step = 1;
-    $min_bid_price = $lot['current_price'] + $lot['betting_step'] + $min_betting_step;
+    $min_bid_price = $lot['current_price'] + $lot['betting_step'];
 
     $lot['min_bid_price'] = $min_bid_price;
 
@@ -111,7 +110,7 @@ function add_lot(mysqli $conn, array $fields, array $img_file, int $user_id): in
     $file_upload = upload_file($img_file['name'], $img_file['tmp_name'], 'img-');
 
     if (($file_upload['status'] ?? false) === false) {
-        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
+        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.');
     }
 
     $lot_data = [
@@ -137,7 +136,7 @@ function add_lot(mysqli $conn, array $fields, array $img_file, int $user_id): in
     $new_lot_id = mysqli_insert_id($conn);
 
     if ($new_lot_id === 0) {
-        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
+        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.');
     }
 
     return $new_lot_id;
@@ -226,7 +225,7 @@ function add_new_bid(mysqli $conn, int $lot_id, int $bid_price, int $user_id): v
     $is_bid_added = $new_bid_id !== 0;
 
     if (!$is_bid_added) {
-        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.', 500);
+        exit_with_message('Произошла ошибка на стороне сервера, попробуйте позже.');
     }
 }
 
@@ -257,7 +256,7 @@ function get_user_bids(mysqli $conn, int $user_id): array
                  JOIN users u on l.user_id = u.id
         WHERE b.user_id = ?
         GROUP BY l.id, l.name, category_name, l.description, l.img_url, l.end_date, is_winner
-        ORDER BY last_buy_time ASC
+        ORDER BY last_buy_time
         SQL,
         [$user_id],
     )->fetch_all(MYSQLI_ASSOC);
@@ -292,5 +291,121 @@ function find_lot_bids(mysqli $conn, int $lot_id): array
     return [
         'total' => $total,
         'bids' => $result,
+    ];
+}
+
+/**
+ * Делает запрос на выбор победителя лотов, у которых закончился срок размещения
+ *
+ * @param mysqli $conn Ресурс подключения к БД
+ * @return void
+ */
+function assign_winners(mysqli $conn): void
+{
+    execute_query(
+        $conn,
+        <<<SQL
+        UPDATE lots l
+            JOIN (SELECT lot_id,
+                         user_id
+                  FROM (SELECT bo.lot_id,
+                               bo.user_id,
+                               ROW_NUMBER() OVER (PARTITION BY bo.lot_id ORDER BY bo.buy_price DESC, bo.created_at DESC) as rn
+                        FROM buy_orders bo
+                                 JOIN lots l ON bo.lot_id = l.id
+                        WHERE l.end_date < NOW()
+                          AND l.winner_id IS NULL) AS ranked_bids
+                  WHERE rn = 1) AS winners ON l.id = winners.lot_id
+        SET l.winner_id = winners.user_id
+        WHERE l.end_date < NOW()
+          AND l.winner_id IS NULL;
+        SQL,
+    );
+}
+
+/**
+ * Возвращает пользователей-победителей, которым не был отправлен email, либо был отправлен с ошибкой
+ *
+ * @param mysqli $conn Ресурс подключения к БД
+ * @return array{
+ *     id: int,
+ *     name: string,
+ *     first_name: string,
+ *     email: string
+ * } Ассоциативный массив пользователей
+ */
+function find_users_with_pending_email(mysqli $conn): array
+{
+    return execute_query(
+        $conn,
+        <<<SQL
+        SELECT
+            l.id,
+            l.name,
+            u.first_name,
+            u.email
+        FROM lots l
+        JOIN users u ON l.winner_id = u.id
+        WHERE winner_id IS NOT NULL
+          AND win_email_sent = FALSE;
+        SQL,
+    )->fetch_all(MYSQLI_ASSOC);
+}
+
+/**
+ * Находит лоты по определённой категории
+ *
+ * @param mysqli $conn Ресурс подключения к БД
+ * @param int $category_id Уникальный идентификатор категории
+ * @param int $page_limit Лимит количества лотов на одной странице
+ * @param int $current_page Номер текущей страницы
+ * @return array{
+ *     lots: array,
+ *     pager_content: array
+ * } Ассоциативный массив, где lots - список лотов, pager_content - информация для постраничной навигации
+ */
+function find_lots_by_category(
+    mysqli $conn,
+    int $category_id,
+    int $page_limit = 9,
+    int $current_page = 1,
+): array {
+    $offset = get_current_page_offset($page_limit, $current_page);
+
+    $result = execute_query(
+        $conn,
+        <<<SQL
+        SELECT l.id,
+               l.name,
+               l.start_price,
+               l.img_url,
+               l.end_date,
+               c.name           AS category_name,
+               COUNT(*) OVER() as total
+        FROM lots l
+                 JOIN categories c on c.id = l.category_id
+        WHERE l.category_id = ?
+        GROUP BY l.id, l.created_at
+        LIMIT ?
+        OFFSET ?
+        SQL,
+        [
+            $category_id,
+            $page_limit,
+            $offset,
+        ],
+    )->fetch_all(MYSQLI_ASSOC);
+
+    $total = $result[0]['total'] ?? 0;
+
+    $links = calculate_pager_state(
+        $page_limit,
+        $current_page,
+        $total,
+    );
+
+    return [
+        'lots' => $result,
+        'pager_content' => $links,
     ];
 }

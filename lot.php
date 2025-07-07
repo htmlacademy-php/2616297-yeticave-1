@@ -41,8 +41,28 @@ $categories_header = include_template(
 $lot = get_lot_by_id($conn, $lot_id);
 
 if (empty($lot)) {
-    $page_title = 'Лот не найден';
-    exit_with_message('Лот не найден', 404);
+    $page_title = '404 Страница не найдена';
+    http_response_code(404);
+    $page_content = include_template(
+        '404.php',
+        [
+            'categories_header' => $categories_header,
+        ],
+    );
+
+    $html_result = include_template(
+        'layout.php',
+        [
+            'categories_list' => $categories_list,
+            'page_title' => $page_title,
+            'is_auth' => $is_auth,
+            'user_name' => $user_name,
+            'page_content' => $page_content,
+        ],
+    );
+
+    print($html_result);
+    die();
 }
 
 $page_title = $lot['name'] ?? '';

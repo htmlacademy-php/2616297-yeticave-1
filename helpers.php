@@ -1,6 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 require_once 'constants.php';
+
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 /**
  * Проверяет переданную дату на соответствие формату 'ГГГГ-ММ-ДД'
@@ -19,9 +26,9 @@ require_once 'constants.php';
 function is_date_valid(string $date): bool
 {
     $format_to_check = 'Y-m-d';
-    $dateTimeObj = date_create_from_format($format_to_check, $date);
+    $date_time_obj = date_create_from_format($format_to_check, $date);
 
-    return $dateTimeObj !== false && array_sum(date_get_last_errors()) === 0;
+    return $date_time_obj !== false && array_sum(date_get_last_errors()) === 0;
 }
 
 /**
@@ -33,13 +40,13 @@ function is_date_valid(string $date): bool
  *
  * @return mysqli_stmt Подготовленное выражение
  */
-function db_get_prepare_stmt($link, $sql, $data = [])
+function db_get_prepare_stmt(mysqli $link, string $sql, array $data = []): mysqli_stmt
 {
     $stmt = mysqli_prepare($link, $sql);
 
     if ($stmt === false) {
-        $errorMsg = 'Не удалось инициализировать подготовленное выражение: ' . mysqli_error($link);
-        die($errorMsg);
+        $error_msg = 'Не удалось инициализировать подготовленное выражение: ' . mysqli_error($link);
+        die($error_msg);
     }
 
     if ($data) {
@@ -47,8 +54,6 @@ function db_get_prepare_stmt($link, $sql, $data = [])
         $stmt_data = [];
 
         foreach ($data as $value) {
-            $type = 's';
-
             $type = match (true) {
                 is_int($value) => 'i',
                 is_string($value) => 's',
@@ -67,8 +72,8 @@ function db_get_prepare_stmt($link, $sql, $data = [])
         $func(...$values);
 
         if (mysqli_errno($link) > 0) {
-            $errorMsg = 'Не удалось связать подготовленное выражение с параметрами: ' . mysqli_error($link);
-            die($errorMsg);
+            $error_msg = 'Не удалось связать подготовленное выражение с параметрами: ' . mysqli_error($link);
+            die($error_msg);
         }
     }
 
@@ -95,29 +100,18 @@ function db_get_prepare_stmt($link, $sql, $data = [])
  * @param string $two Форма множественного числа для 2, 3, 4: яблока, часа, минуты
  * @param string $many Форма множественного числа для остальных чисел
  *
- * @return string Рассчитанная форма множественнго числа
+ * @return string Рассчитанная форма множественного числа
  */
 function get_noun_plural_form(int $number, string $one, string $two, string $many): string
 {
     $mod10 = $number % 10;
     $mod100 = $number % 100;
 
-    switch (true) {
-        case ($mod100 >= 11 && $mod100 <= 20):
-            return $many;
-
-        case ($mod10 > 5):
-            return $many;
-
-        case ($mod10 === 1):
-            return $one;
-
-        case ($mod10 >= 2 && $mod10 <= 4):
-            return $two;
-
-        default:
-            return $many;
-    }
+    return match (true) {
+        $mod10 === 1 => $one,
+        $mod10 >= 2 && $mod10 <= 4 => $two,
+        default => $many,
+    };
 }
 
 /**
@@ -126,7 +120,7 @@ function get_noun_plural_form(int $number, string $one, string $two, string $man
  * @param array $data Ассоциативный массив с данными для шаблона
  * @return string Итоговый HTML
  */
-function include_template($name, array $data = [])
+function include_template(string $name, array $data = []): string
 {
     $name = 'templates/' . $name;
     $result = '';
@@ -139,9 +133,7 @@ function include_template($name, array $data = [])
     extract($data);
     require $name;
 
-    $result = ob_get_clean();
-
-    return $result;
+    return ob_get_clean();
 }
 
 /**
@@ -477,9 +469,11 @@ function to_time_ago_format(string $date): string
 {
     $dt_range = get_passed_time($date);
     $date_to_format = date_create($date);
+
     if ($date_to_format === false) {
         return '';
     }
+
     $yesterday_date = date_create('yesterday');
     $date_time = date_format($date_to_format, 'H:i');
     $was_yesterday = $date_to_format->format('Y-m-d') === $yesterday_date->format('Y-m-d');
@@ -501,4 +495,54 @@ function to_time_ago_format(string $date): string
         $was_yesterday => "Вчера, в $date_time",
         default => date_format($date_to_format, 'd.m.y в H:i'),
     };
+}
+
+/**
+ * Отправляет email
+ *
+ * @param array{
+ *       user: string,
+ *       pass: string,
+ *       host: string,
+ *       port: int,
+ * } $mail_settings Ассоциативный массив с данными для отправки по SMTP
+ * @param string $to Почта, с которой отправляется email
+ * @param string $subject Почта, куда отправляется email
+ * @param string $body Тело email
+ * @param string $content_type Значение заголовка Content-Type
+ * @return int Возвращает константу EMAIL_DELIVERY_SUCCESS или EMAIL_DELIVERY_FAILURE,
+ *             в зависимости от результата отправки
+ */
+function send_email(
+    array $mail_settings,
+    string $to,
+    string $subject,
+    string $body,
+    string $content_type
+): int {
+    $user = $mail_settings['user'];
+    $dsn_string = sprintf(
+        'smtp://%s:%s@%s:%s',
+        urlencode($user),
+        urlencode($mail_settings['pass']),
+        $mail_settings['host'],
+        $mail_settings['port']
+    );
+    $transport = Transport::fromDsn($dsn_string);
+    $mailer = new Mailer($transport);
+
+    $email = (new Email())
+        ->from($user)
+        ->to($to)
+        ->subject($subject)
+        ->html($body);
+
+    $email->getHeaders()->addTextHeader('Content-Type', $content_type);
+
+    try {
+        $mailer->send($email);
+        return EMAIL_DELIVERY_SUCCESS;
+    } catch (TransportExceptionInterface $e) {
+        return EMAIL_DELIVERY_FAILURE;
+    }
 }

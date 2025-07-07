@@ -44,3 +44,12 @@ const MIME_MAP = [
     'application/javascript' => 'js',
     'application/x-httpd-php' => 'php',
 ];
+
+/**
+ * Значение когда письмо было успешно отправлено
+ */
+const EMAIL_DELIVERY_SUCCESS = 1;
+/**
+ * Значение когда отправка письма закончилась ошибкой
+ */
+const EMAIL_DELIVERY_FAILURE = 0;

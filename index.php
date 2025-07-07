@@ -7,6 +7,7 @@ $conn = require_once 'init.php';
 require_once 'models/category.php';
 require_once 'models/user.php';
 require_once 'models/lot.php';
+require_once 'getwinner.php';
 
 $is_auth = is_user_authorized($conn);
 

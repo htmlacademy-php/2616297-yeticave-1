@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once 'helpers.php';
 require_once 'constants.php';
+require_once 'vendor/autoload.php';
 
 $is_session_started = session_start();
 
